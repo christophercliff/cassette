@@ -133,7 +133,7 @@ bundles.Add<HtmlTemplateBundle>(
     "scripts/todos/template",
     (bundle) => bundle.Processor = new HoganPipeline()
     {
-        Namespace = "JST"
+        JavaScriptVariableName = "JST"
     }
 );
 ```
