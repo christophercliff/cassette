@@ -34,18 +34,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Cassette, Version=1.1.0.29146, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\src\Cassette\bin\Debug\Cassette.dll</HintPath>
-    </Reference>
-    <Reference Include="Cassette.Views, Version=1.1.0.29147, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\src\Cassette.Views\bin\Debug\Cassette.Views.dll</HintPath>
-    </Reference>
-    <Reference Include="Cassette.Web, Version=1.1.0.29147, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\src\Cassette.Web\bin\Debug\Cassette.Web.dll</HintPath>
-    </Reference>
     <Reference Include="EntityFramework">
       <HintPath>..\packages\EntityFramework.4.1.10331.0\lib\EntityFramework.dll</HintPath>
     </Reference>
@@ -85,6 +73,7 @@
     <Content Include="Fonts\droidsans-bold-webfont.svg" />
     <Content Include="Fonts\droidsans-webfont.svg" />
     <Content Include="Global.asax" />
+    <Content Include="Images\background.png" />
     <Content Include="Images\destroy.png" />
     <Content Include="Scripts\lib\backbone.js" />
     <Content Include="Scripts\lib\bundle.txt" />
@@ -113,15 +102,29 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Fonts\droidsans-bold-webfont.eot" />
-    <None Include="Fonts\droidsans-bold-webfont.ttf" />
-    <None Include="Fonts\droidsans-bold-webfont.woff" />
-    <None Include="Fonts\droidsans-webfont.eot" />
-    <None Include="Fonts\droidsans-webfont.ttf" />
-    <None Include="Fonts\droidsans-webfont.woff" />
+    <Content Include="Fonts\droidsans-bold-webfont.eot" />
+    <Content Include="Fonts\droidsans-bold-webfont.ttf" />
+    <Content Include="Fonts\droidsans-bold-webfont.woff" />
+    <Content Include="Fonts\droidsans-webfont.eot" />
+    <Content Include="Fonts\droidsans-webfont.ttf" />
+    <Content Include="Fonts\droidsans-webfont.woff" />
     <None Include="README.md" />
-    <None Include="Scripts\todos\templates\stats.mustache" />
-    <None Include="Scripts\todos\templates\item.mustache" />
+    <Content Include="Scripts\todos\templates\stats.mustache" />
+    <Content Include="Scripts\todos\templates\item.mustache" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Cassette.Views\Cassette.Views.csproj">
+      <Project>{3A021487-A395-4FE6-9B41-336D0F1E6AD0}</Project>
+      <Name>Cassette.Views</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\Cassette.Web\Cassette.Web.csproj">
+      <Project>{733F8032-D649-4E4C-A23E-4A048C33FCAE}</Project>
+      <Name>Cassette.Web</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\Cassette\Cassette.csproj">
+      <Project>{A5CCF9D3-5D49-4BFC-B9A6-9EC9E0E29C50}</Project>
+      <Name>Cassette</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

@@ -1,4 +1,4 @@
-﻿﻿using Cassette.Configuration;
+﻿using Cassette.Configuration;
 using Cassette.HtmlTemplates;
 using Cassette.Scripts;
 using Cassette.Stylesheets;
@@ -11,7 +11,7 @@ namespace Backbone
         {
             bundles.Add<StylesheetBundle>(
                 "styles/todos",
-                (bundle) => bundle.Processor = new StylesheetPipeline()
+                bundle => bundle.Processor = new StylesheetPipeline()
                     .EmbedImages()
                     .EmbedFonts()
             );
@@ -23,8 +23,8 @@ namespace Backbone
             );
             bundles.Add<HtmlTemplateBundle>(
                 "scripts/todos/templates",
-                (bundle) => bundle.Processor = new HoganPipeline(){
-                    Namespace = "JST"
+                bundle => bundle.Processor = new HoganPipeline {
+                    JavaScriptVariableName = "JST"
                 }
             );
         }
