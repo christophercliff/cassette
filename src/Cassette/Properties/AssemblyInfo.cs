@@ -22,6 +22,7 @@ using System.Runtime.InteropServices;
 [assembly: Guid("da355e7d-f445-4c8d-856c-c7b6ae19bb7d")]
 
 [assembly: InternalsVisibleTo("Cassette.CoffeeScript")]
+[assembly: InternalsVisibleTo("Cassette.Handlebars")]
 [assembly: InternalsVisibleTo("Cassette.Hogan")]
 [assembly: InternalsVisibleTo("Cassette.JQueryTmpl")]
 [assembly: InternalsVisibleTo("Cassette.KnockoutJQueryTmpl")]

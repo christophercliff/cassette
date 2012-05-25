@@ -1,8 +1,8 @@
 ﻿@{
     Bundles.Reference("assets/styles");
     Bundles.Reference("assets/iestyles");
-    Bundles.Reference("http://platform.twitter.com/widgets.js");
-    Bundles.Reference("https://apis.google.com/js/plusone.js");
+    Bundles.Reference("assets/handlebars-scripts");
+    Bundles.Reference("assets/handlebars-templates");
 }
 <!DOCTYPE html>
 <html>
@@ -64,6 +64,7 @@
     </div>
 
     @Bundles.RenderScripts()
+    @Bundles.RenderHtmlTemplates()
     
     <script type="text/javascript">
         var _gaq = _gaq || [];
