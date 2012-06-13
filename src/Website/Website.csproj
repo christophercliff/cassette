@@ -152,6 +152,14 @@
       <Project>{BF4F5C42-73C0-4BD4-B696-FB41EA7D658C}</Project>
       <Name>Cassette.Handlebars</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Cassette.Hogan\Cassette.Hogan.csproj">
+      <Project>{4D64EC45-C42A-4601-9E80-2D166AC849F3}</Project>
+      <Name>Cassette.Hogan</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Cassette.Less\Cassette.Less.csproj">
+      <Project>{EC1BE4F4-A2A7-4154-9F4D-F75D1B1FD976}</Project>
+      <Name>Cassette.Less</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Cassette.Views\Cassette.Views.csproj">
       <Project>{3A021487-A395-4FE6-9B41-336D0F1E6AD0}</Project>
       <Name>Cassette.Views</Name>

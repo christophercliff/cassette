@@ -9,7 +9,6 @@ namespace Cassette.HtmlTemplates
         {
             scriptEngine = new ScriptEngine();
             scriptEngine.Execute(Properties.Resources.handlebars
-                + Properties.Resources.handlebars_i18n
                 + Properties.Resources.compile);
         }
         

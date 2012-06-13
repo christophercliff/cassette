@@ -1,223 +1,287 @@
-﻿// lib/handlebars/base.js
-var Handlebars = {};
-
-Handlebars.VERSION = "1.0.beta.5";
-
-Handlebars.helpers  = {};
-Handlebars.partials = {};
-
-Handlebars.registerHelper = function(name, fn, inverse) {
-  if(inverse) { fn.not = inverse; }
-  this.helpers[name] = fn;
-};
-
-Handlebars.registerPartial = function(name, str) {
-  this.partials[name] = str;
-};
-
-Handlebars.registerHelper('helperMissing', function(arg) {
-  if(arguments.length === 2) {
-    return undefined;
-  } else {
-    throw new Error("Could not find property '" + arg + "'");
-  }
-});
-
-var toString = Object.prototype.toString, functionType = "[object Function]";
-
-Handlebars.registerHelper('blockHelperMissing', function(context, options) {
-  var inverse = options.inverse || function() {}, fn = options.fn;
+﻿/*
+ *  Copyright 2011 Twitter, Inc.
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 
 
-  var ret = "";
-  var type = toString.call(context);
 
-  if(type === functionType) { context = context.call(this); }
+var Hogan = {};
 
-  if(context === true) {
-    return fn(this);
-  } else if(context === false || context == null) {
-    return inverse(this);
-  } else if(type === "[object Array]") {
-    if(context.length > 0) {
-      for(var i=0, j=context.length; i<j; i++) {
-        ret = ret + fn(context[i]);
-      }
-    } else {
-      ret = inverse(this);
-    }
-    return ret;
-  } else {
-    return fn(context);
-  }
-});
-
-Handlebars.registerHelper('each', function(context, options) {
-  var fn = options.fn, inverse = options.inverse;
-  var ret = "";
-
-  if(context && context.length > 0) {
-    for(var i=0, j=context.length; i<j; i++) {
-      ret = ret + fn(context[i]);
-    }
-  } else {
-    ret = inverse(this);
-  }
-  return ret;
-});
-
-Handlebars.registerHelper('if', function(context, options) {
-  var type = toString.call(context);
-  if(type === functionType) { context = context.call(this); }
-
-  if(!context || Handlebars.Utils.isEmpty(context)) {
-    return options.inverse(this);
-  } else {
-    return options.fn(this);
-  }
-});
-
-Handlebars.registerHelper('unless', function(context, options) {
-  var fn = options.fn, inverse = options.inverse;
-  options.fn = inverse;
-  options.inverse = fn;
-
-  return Handlebars.helpers['if'].call(this, context, options);
-});
-
-Handlebars.registerHelper('with', function(context, options) {
-  return options.fn(context);
-});
-
-Handlebars.registerHelper('log', function(context) {
-  Handlebars.log(context);
-});
-;
-// lib/handlebars/utils.js
-Handlebars.Exception = function(message) {
-  var tmp = Error.prototype.constructor.apply(this, arguments);
-
-  for (var p in tmp) {
-    if (tmp.hasOwnProperty(p)) { this[p] = tmp[p]; }
+(function (Hogan) {
+  Hogan.Template = function (codeObj, text, compiler, options) {
+    codeObj = codeObj || {};
+    this.r = codeObj.code || this.r;
+    this.c = compiler;
+    this.options = options || {};
+    this.text = text || '';
+    this.partials = codeObj.partials || {};
+    this.subs = codeObj.subs || {};
+    this.ib();
   }
 
-  this.message = tmp.message;
-};
-Handlebars.Exception.prototype = new Error;
+  Hogan.Template.prototype = {
+    // render: replaced by generated code.
+    r: function (context, partials, indent) { return ''; },
 
-// Build out our basic SafeString type
-Handlebars.SafeString = function(string) {
-  this.string = string;
-};
-Handlebars.SafeString.prototype.toString = function() {
-  return this.string.toString();
-};
+    // variable escaping
+    v: hoganEscape,
 
-(function() {
-  var escape = {
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#x27;",
-    "`": "&#x60;"
-  };
+    // triple stache
+    t: coerceToString,
 
-  var badChars = /&(?!\w+;)|[<>"'`]/g;
-  var possible = /[&<>"'`]/;
-
-  var escapeChar = function(chr) {
-    return escape[chr] || "&amp;";
-  };
-
-  Handlebars.Utils = {
-    escapeExpression: function(string) {
-      // don't escape SafeStrings, since they're already safe
-      if (string instanceof Handlebars.SafeString) {
-        return string.toString();
-      } else if (string == null || string === false) {
-        return "";
-      }
-
-      if(!possible.test(string)) { return string; }
-      return string.replace(badChars, escapeChar);
+    render: function render(context, partials, indent) {
+      return this.ri([context], partials || {}, indent);
     },
 
-    isEmpty: function(value) {
-      if (typeof value === "undefined") {
-        return true;
-      } else if (value === null) {
-        return true;
-      } else if (value === false) {
-        return true;
-      } else if(Object.prototype.toString.call(value) === "[object Array]" && value.length === 0) {
-        return true;
+    // render internal -- a hook for overrides that catches partials too
+    ri: function (context, partials, indent) {
+      return this.r(context, partials, indent);
+    },
+
+    // ensurePartial
+    ep: function(symbol, partials) {
+      var partial = this.partials[symbol];
+
+      // check to see that if we've instantiated this partial before
+      var template = partials[partial.name];
+      if (partial.instance && partial.base == template) {
+        return partial.instance;
+      }
+
+      if (typeof template == 'string') {
+        if (!this.c) {
+          throw new Error("No compiler available.");
+        }
+        template = this.c.compile(template, this.options);
+      }
+
+      if (!template) {
+        return null;
+      }
+
+      // We use this to check whether the partials dictionary has changed
+      this.partials[symbol].base = template;
+
+      if (partial.subs) {
+        template = createSpecializedPartial(template, partial.subs,
+partial.partials);
+      }
+
+      this.partials[symbol].instance = template;
+      return template;
+    },
+
+    // tries to find a partial in the curent scope and render it
+    rp: function(symbol, ctx, partials, indent) {
+      var partial = this.ep(symbol, partials);
+      if (!partial) {
+        return '';
+      }
+
+      return partial.ri(ctx, partials, indent);
+    },
+
+    // render a section
+    rs: function(ctx, partials, section) {
+      var tail = ctx[ctx.length - 1],
+          func,
+          offset,
+          arg;
+
+      if (typeof tail == 'function') {
+        func = tail;
+        tail = ctx[ctx.length - 2];
+        offset = this.buf.length;
+      }
+
+      if (!isArray(tail)) {
+        section(ctx, partials, this);
       } else {
+        for (var i = 0; i < tail.length; i++) {
+          ctx.push(tail[i]);
+          section(ctx, partials, this);
+          ctx.pop();
+        }
+      }
+
+      if (func) {
+        arg = this.buf.substr(offset);
+        this.buf = this.buf.substr(0, offset);
+        this.b(func(arg));
+      }
+    },
+
+    // maybe start a section
+    s: function(val, ctx, partials, inverted) {
+      if (isArray(val) && val.length === 0) {
         return false;
       }
-    }
-  };
-})();;
-// lib/handlebars/runtime.js
-Handlebars.VM = {
-  template: function(templateSpec) {
-    // Just add water
-    var container = {
-      escapeExpression: Handlebars.Utils.escapeExpression,
-      invokePartial: Handlebars.VM.invokePartial,
-      programs: [],
-      program: function(i, fn, data) {
-        var programWrapper = this.programs[i];
-        if(data) {
-          return Handlebars.VM.program(fn, data);
-        } else if(programWrapper) {
-          return programWrapper;
-        } else {
-          programWrapper = this.programs[i] = Handlebars.VM.program(fn);
-          return programWrapper;
+
+      var func;
+      if (typeof val == 'function') {
+        val = this.ms(val, ctx, partials);
+        if (typeof val == 'function') {
+          func = val;
         }
-      },
-      programWithDepth: Handlebars.VM.programWithDepth,
-      noop: Handlebars.VM.noop
-    };
+      }
 
-    return function(context, options) {
-      options = options || {};
-      return templateSpec.call(container, Handlebars, context, options.helpers, options.partials, options.data);
-    };
-  },
+      var pass = (val === '') || !!val;
 
-  programWithDepth: function(fn, data, $depth) {
-    var args = Array.prototype.slice.call(arguments, 2);
+      if (!inverted && pass && ctx) {
+        if (func) {
+          ctx.push(func);
+        } else {
+          ctx.push((typeof val == 'object') ? val : ctx[ctx.length - 1]);
+        }
+      }
 
-    return function(context, options) {
-      options = options || {};
+      return pass;
+    },
 
-      return fn.apply(this, [context, options.data || data].concat(args));
-    };
-  },
-  program: function(fn, data) {
-    return function(context, options) {
-      options = options || {};
+    // find values with dotted names
+    d: function(key, ctx, partials, returnFound) {
+      var names = key.split('.'),
+          val = this.f(names[0], ctx, partials, returnFound),
+          cx = null;
 
-      return fn(context, options.data || data);
-    };
-  },
-  noop: function() { return ""; },
-  invokePartial: function(partial, name, context, helpers, partials, data) {
-    options = { helpers: helpers, partials: partials, data: data };
+      if (key === '.' && isArray(ctx[ctx.length - 2])) {
+        return ctx[ctx.length - 1];
+      }
 
-    if(partial === undefined) {
-      throw new Handlebars.Exception("The partial " + name + " could not be found");
-    } else if(partial instanceof Function) {
-      return partial(context, options);
-    } else if (!Handlebars.compile) {
-      throw new Handlebars.Exception("The partial " + name + " could not be compiled when running in runtime-only mode");
-    } else {
-      partials[name] = Handlebars.compile(partial);
-      return partials[name](context, options);
+      for (var i = 1; i < names.length; i++) {
+        if (val && typeof val == 'object' && val[names[i]] != null) {
+          cx = val;
+          val = val[names[i]];
+        } else {
+          val = '';
+        }
+      }
+
+      if (returnFound && !val) {
+        return false;
+      }
+
+      if (!returnFound && typeof val == 'function') {
+        ctx.push(cx);
+        val = this.mv(val, ctx, partials);
+        ctx.pop();
+      }
+
+      return val;
+    },
+
+    // find values with normal names
+    f: function(key, ctx, partials, returnFound) {
+      var val = false,
+          v = null,
+          found = false;
+
+      for (var i = ctx.length - 1; i >= 0; i--) {
+        v = ctx[i];
+        if (v && typeof v == 'object' && v[key] != null) {
+          val = v[key];
+          found = true;
+          break;
+        }
+      }
+
+      if (!found) {
+        return (returnFound) ? false : "";
+      }
+
+      if (!returnFound && typeof val == 'function') {
+        val = this.mv(val, ctx, partials);
+      }
+
+      return val;
+    },
+
+    // template result buffering
+    b: function(s) { this.buf += s; },
+    fl: function() { var r = this.buf; this.buf = ''; return r; },
+
+    // init the buffer
+    ib: function () {
+      this.buf = '';
+    },
+
+    // method replace section
+    ms: function(func, ctx, partials) {
+      var cx = ctx[ctx.length - 1];
+      return func.call(cx);
+    },
+
+    // method replace variable
+    mv: function(func, ctx, partials) {
+      var cx = ctx[ctx.length - 1];
+      return func.call(cx);
+    },
+
+    sub: function(name, context, partials) {
+      var f = this.subs[name];
+      if (f) {
+        f(context, partials, this);
+      }
     }
-  }
-};
 
-Handlebars.template = Handlebars.VM.template;
-;
+  };
+
+  function createSpecializedPartial(instance, subs, partials) {
+    function PartialTemplate() {};
+    PartialTemplate.prototype = instance;
+    function Substitutions() {};
+    Substitutions.prototype = instance.subs;
+    var key;
+    var partial = new PartialTemplate();
+    partial.subs = new Substitutions();
+    partial.ib();
+
+    for (key in subs) {
+      partial.subs[key] = subs[key];
+    }
+
+    for (key in partials) {
+      partial.partials[key] = partials[key];
+    }
+
+    return partial;
+  }
+
+  var rAmp = /&/g,
+      rLt = /</g,
+      rGt = />/g,
+      rApos =/\'/g,
+      rQuot = /\"/g,
+      hChars =/[&<>\"\']/;
+
+  function coerceToString(val) {
+    return String((val === null || val === undefined) ? '' : val);
+  }
+
+  function hoganEscape(str) {
+    str = coerceToString(str);
+    return hChars.test(str) ?
+      str
+        .replace(rAmp,'&amp;')
+        .replace(rLt,'&lt;')
+        .replace(rGt,'&gt;')
+        .replace(rApos,'&#39;')
+        .replace(rQuot, '&quot;') :
+      str;
+  }
+
+  var isArray = Array.isArray || function(a) {
+    return Object.prototype.toString.call(a) === '[object Array]';
+  };
+
+})(typeof exports !== 'undefined' ? exports : Hogan);

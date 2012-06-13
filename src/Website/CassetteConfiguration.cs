@@ -34,7 +34,7 @@ namespace Website
             );
             bundles.Add<HtmlTemplateBundle>(
                 "assets/handlebars-templates",
-                (bundle) => bundle.Processor = new HandlebarsPipeline()
+                (bundle) => bundle.Processor = new HoganPipeline()
             );
         }
     }

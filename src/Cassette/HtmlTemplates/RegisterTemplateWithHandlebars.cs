@@ -27,7 +27,8 @@ namespace Cassette.HtmlTemplates
                 
                 sb.AppendLine("var " + javaScriptVariableName + " = " + javaScriptVariableName + "|| {};");
                 sb.AppendLine(template + " = Handlebars.template(" + compiled + ");");
-                sb.AppendLine(template + ".render = " + template); // Create a duplicate `render` method to support our legacy Hogan implementation
+                // Create a duplicate `render` method to support our legacy Hogan implementation.
+                sb.AppendLine(template + ".render = " + template + ";");
                 
                 return sb.ToString().AsStream();
             };
