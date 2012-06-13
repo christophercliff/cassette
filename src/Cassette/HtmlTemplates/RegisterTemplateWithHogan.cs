@@ -26,8 +26,7 @@ namespace Cassette.HtmlTemplates
                 var sb = new StringBuilder();
 
                 sb.AppendLine("var " + javaScriptVariableName + " = " + javaScriptVariableName + "|| {};");
-                sb.AppendLine(template + "= new HoganTemplate();");
-                sb.AppendLine(template + ".render = " + compiled);
+                sb.AppendLine(template + "= new Hogan.Template(" + compiled + ");");
                 
                 return sb.ToString().AsStream();
             };
