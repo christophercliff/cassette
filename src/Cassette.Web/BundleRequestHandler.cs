@@ -112,23 +112,6 @@ namespace Cassette.Web
 
         Stream EncodeStreamAndAppendResponseHeaders(Stream stream, string encoding)
         {
-            if (encoding == null)
-            {
-                return stream;
-            }
-
-            if (encoding.IndexOf("deflate", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                response.AppendHeader("Content-Encoding", "deflate");
-                response.AppendHeader("Vary", "Accept-Encoding");
-                return new DeflateStream(stream, CompressionMode.Compress, true);
-            }
-            else if (encoding.IndexOf("gzip", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                response.AppendHeader("Content-Encoding", "gzip");
-                response.AppendHeader("Vary", "Accept-Encoding");
-                return new GZipStream(stream, CompressionMode.Compress, true);
-            }
             return stream;
         }
     }
