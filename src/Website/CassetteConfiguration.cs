@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 ﻿using Cassette;
 ﻿using Cassette.Configuration;
+=======
+﻿using Cassette.Configuration;
+using Cassette.HtmlTemplates;
+>>>>>>> 023c848... Added handlebars project
 using Cassette.Scripts;
 using Cassette.Stylesheets;
 
@@ -13,7 +18,7 @@ namespace Website
             settings.UrlModifier = new StaticDomainUrlModifier(settings.UrlModifier);
             bundles.Add<StylesheetBundle>("assets/styles");
             bundles.Add<StylesheetBundle>("assets/iestyles", b => b.Condition = "IE");
-
+            
             bundles.AddPerSubDirectory<ScriptBundle>("assets/scripts");
             bundles.AddUrlWithLocalAssets(
                 "//ajax.googleapis.com/ajax/libs/jquery/1.6.3/jquery.min.js",
@@ -22,6 +27,14 @@ namespace Website
                     FallbackCondition = "!window.jQuery",
                     Path =  "assets/scripts/jquery"
                 }
+            );
+            
+            bundles.AddPerSubDirectory<ScriptBundle>(
+                "assets/handlebars-scripts"
+            );
+            bundles.Add<HtmlTemplateBundle>(
+                "assets/handlebars-templates",
+                (bundle) => bundle.Processor = new HandlebarsPipeline()
             );
         }
     }
