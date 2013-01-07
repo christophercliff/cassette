@@ -2,7 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Cassette.BundleProcessing;
+using Cassette.HtmlTemplates;
 using Cassette.IO;
+using Cassette.ScriptAndTemplate;
+using Cassette.Scripts;
+using Cassette.Stylesheets;
 using Cassette.Utilities;
 
 namespace Cassette.Configuration
@@ -58,16 +63,23 @@ namespace Cassette.Configuration
         public static void Add<T>(this BundleCollection bundleCollection, string applicationRelativePath, IFileSearch fileSearch, Action<T> customizeBundle)
             where T : Bundle
         {
+            var bundle = CreateBundle(applicationRelativePath, fileSearch, customizeBundle, bundleCollection.Settings);
+            bundleCollection.Add(bundle);
+        }
+
+        private static T CreateBundle<T>(string applicationRelativePath, IFileSearch fileSearch, Action<T> customizeBundle, CassetteSettings settings)
+            where T : Bundle
+        {
             applicationRelativePath = PathUtilities.AppRelative(applicationRelativePath);
             Trace.Source.TraceInformation(string.Format("Creating {0} for {1}", typeof(T).Name, applicationRelativePath));
 
             T bundle;
-            var bundleFactory = (IBundleFactory<T>)bundleCollection.Settings.BundleFactories[typeof(T)];
-            
-            var source = bundleCollection.Settings.SourceDirectory;
+            var bundleFactory = (IBundleFactory<T>)settings.BundleFactories[typeof(T)];
+
+            var source = settings.SourceDirectory;
             if (source.DirectoryExists(applicationRelativePath))
             {
-                fileSearch = fileSearch ?? bundleCollection.Settings.DefaultFileSearches[typeof(T)];
+                fileSearch = fileSearch ?? settings.DefaultFileSearches[typeof(T)];
                 var directory = source.GetDirectory(applicationRelativePath);
                 var allFiles = fileSearch.FindFiles(directory);
                 bundle = CreateDirectoryBundle(applicationRelativePath, bundleFactory, allFiles, directory);
@@ -92,7 +104,89 @@ namespace Cassette.Configuration
 
             TraceAssetFilePaths(bundle);
 
+            return bundle;
+        }
+
+        private static ScriptAndTemplateBundle CreateScriptAndTemplateBundle(string bundleName, string applicationRelativeScriptPath, string applicationRelativeTemplatePath, Func<IBundleProcessor<HtmlTemplateBundle>> templateProcessor, CassetteSettings settings)
+        {
+            var scriptBundle = CreateBundle<ScriptBundle>(applicationRelativeScriptPath, null, null, settings);
+            var templateBundle = CreateBundle<HtmlTemplateBundle>(applicationRelativeTemplatePath, null, null, settings);
+            return new ScriptAndTemplateBundle(bundleName, scriptBundle, templateBundle, templateProcessor);
+        }
+
+        /// <summary>
+        /// Adds a bundle comprised of a script bundle and its templates.
+        /// </summary>
+        /// <param name="bundleCollection">the collection to add to</param>
+        /// <param name="bundleName">Unique name for the combined bundle</param>
+        /// <param name="applicationRelativeScriptPath">Location of the script bundle</param>
+        /// <param name="applicationRelativeTemplatePath">Location of the template bundle</param>
+        /// <param name="templateProcessor">The processor you want used on the templates</param>
+        public static void Add(this BundleCollection bundleCollection, string bundleName, string applicationRelativeScriptPath, string applicationRelativeTemplatePath, Func<IBundleProcessor<HtmlTemplateBundle>> templateProcessor)
+        {
+            var bundle = CreateScriptAndTemplateBundle(bundleName, applicationRelativeScriptPath, applicationRelativeTemplatePath, templateProcessor, bundleCollection.Settings);
             bundleCollection.Add(bundle);
+        }
+
+        /// <summary>
+        /// Creates a script bundle comprised of the passed in bundle paths.  If the tuple can have a null string passed in as the second item
+        /// to indicate the script path does not have an associated template path
+        /// </summary>
+        /// <param name="bundleCollection">the collection to add to</param>
+        /// <param name="bundleName">Unique name for the combined bundle</param>
+        /// <param name="scriptAndTemplatePaths">Tuple of script and template bundle paths.</param>
+        /// <param name="templateProcessor">The template processor to be used.</param>
+        public static void Add(this BundleCollection bundleCollection, string bundleName, List<Tuple<string, string>> scriptAndTemplatePaths, Func<IBundleProcessor<HtmlTemplateBundle>> templateProcessor)
+        {
+            var bundles = new List<ScriptBundle>();
+            var bundleNames = new List<string>();
+
+            foreach(var path in scriptAndTemplatePaths)
+            {
+                bundleNames.Add(path.Item1);
+                if(path.Item2 == null)
+                {
+                    var bundle = CreateBundle<ScriptBundle>(path.Item1, null, null, bundleCollection.Settings);
+                    bundle.Processor = new ScriptPipeline();
+                    bundles.Add(bundle);
+                }
+                else
+                {
+                    var bundle = CreateScriptAndTemplateBundle(path.Item1, path.Item1, path.Item2, templateProcessor, bundleCollection.Settings);
+                    bundles.Add(bundle);
+                }
+
+            }
+
+            var combinedScriptBundle = new CombinedScriptBundle(bundleName, bundles, bundleNames);
+            bundleCollection.Add(combinedScriptBundle);
+        }
+
+        /// <summary>
+        /// Creates a stylesheet bundle comprised fo the passed in bundle paths.
+        /// </summary>
+        /// <param name="bundleCollection">the collection to add to</param>
+        /// <param name="bundleName">Unique name for the combined bundle</param>
+        /// <param name="styleSheetPaths">paths for the bundles to be combined</param>
+        /// <param name="styleSheetProcessor">how the stylesheets should be processed.</param>
+        public static void Add(this BundleCollection bundleCollection, string bundleName, List<string> styleSheetPaths, Func<IBundleProcessor<StylesheetBundle>> styleSheetProcessor)
+        {
+            var bundles = new List<StylesheetBundle>();
+
+            if(styleSheetProcessor == null)
+            {
+                styleSheetProcessor = () => new StylesheetPipeline();
+            }
+
+            foreach (var path in styleSheetPaths)
+            {
+                var bundle = CreateBundle<StylesheetBundle>(path, null, null, bundleCollection.Settings);
+                bundle.Processor = styleSheetProcessor();
+                bundles.Add(bundle);
+            }
+
+            var combinedScriptBundle = new CombinedStylesheetBundle(bundleName, bundles, styleSheetPaths);
+            bundleCollection.Add(combinedScriptBundle);
         }
 
         /// <summary>
