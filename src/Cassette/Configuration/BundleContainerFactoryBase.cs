@@ -4,6 +4,7 @@ using System.Text;
 using Cassette.BundleProcessing;
 using Cassette.HtmlTemplates;
 using Cassette.IO;
+using Cassette.ScriptAndTemplate;
 using Cassette.Scripts;
 using Cassette.Stylesheets;
 
@@ -20,12 +21,28 @@ namespace Cassette.Configuration
 
         public abstract IBundleContainer CreateBundleContainer();
 
+        private bool IsCompositeBundle(Bundle bundle)
+        {
+            return bundle is ScriptAndTemplateBundle
+                   || bundle is CombinedScriptBundle
+                   || bundle is CombinedStylesheetBundle;
+        }
 
         protected Bundle ProcessSingleBundle(IFileHelper fileHelper, IDirectory directory, List<Bundle> bundlesToSort,
             Dictionary<string, string> uncachedToCachedFiles, Bundle bundle, AssignHash hasher) 
         {
             Trace.Source.TraceInformation("Processing {0} {1}", bundle.GetType().Name, bundle.Path);
-            hasher.Process(bundle, settings);
+            
+            //need to process early to generate an accurate hash.
+            if (IsCompositeBundle(bundle))
+            {
+                bundle.Process(settings);
+            }
+            else
+            {
+                hasher.Process(bundle, settings);
+            }
+            
             var bundleKey = CassetteSettings.bundles.GetSafeString(Encoding.Default.GetString(bundle.Hash));
             if (CassetteSettings.bundles.ContainsKey(fileHelper, directory, uncachedToCachedFiles, bundleKey, bundle))
             {
@@ -35,7 +52,10 @@ namespace Cassette.Configuration
             else
             {
                 var unprocessedAssetPaths = CassetteSettings.bundles.GetAssetPaths(bundle);
-                bundle.Process(settings);
+                if (!IsCompositeBundle(bundle))
+                {
+                    bundle.Process(settings);
+                }
                 CassetteSettings.bundles.AddBundle(fileHelper, uncachedToCachedFiles, bundleKey, bundle, unprocessedAssetPaths);
             }
             return bundle;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Cassette.IO;
 using Newtonsoft.Json;
@@ -141,8 +142,9 @@ namespace Cassette.Configuration
         bool GetFromDisk(IFileHelper fileHelper, IDirectory directory, IDictionary<string, string> uncachedToCachedFiles, Bundle bundle)
         {
             bool isOnDisk = false;
-            var assetList = new List<IAsset>();
+            var assetList = new List<FileAsset>();
             var assetSpecificLookup = new List<KeyValuePair<string, string>>();
+            var newToOld = new Dictionary<string, string>();
             foreach (IAsset asset in bundle.Assets)
             {
                 string systemAbsoluteFilename = GetFileName(asset, bundle, CacheDirectory);
@@ -161,6 +163,7 @@ namespace Cassette.Configuration
                 {
                     continue;
                 }
+                newToOld.Add(asset.SourceFile.FullPath, fileAsset.SourceFile.FullPath);
                 assetList.Add(fileAsset);
                 if (!uncachedToCachedFiles.ContainsKey(asset.SourceFile.FullPath))
                 {
@@ -170,7 +173,7 @@ namespace Cassette.Configuration
             if (bundle.Assets.Count == assetList.Count)
             {
                 bundle.Assets.Clear();
-                foreach (IAsset asset in assetList)
+                foreach (FileAsset asset in assetList)
                 {
                     bundle.Assets.Add(asset);
                 }

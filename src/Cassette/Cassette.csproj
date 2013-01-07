@@ -76,6 +76,9 @@
     </Compile>
     <Compile Include="BundleProcessing\AssignHash.cs" />
     <Compile Include="BundleReferenceCollector.cs" />
+    <Compile Include="CombinedBundles\CombinedScriptBundle.cs" />
+    <Compile Include="CombinedBundles\CombinedStyleSheetBundle.cs" />
+    <Compile Include="CombinedBundles\CombinedBundleUtility.cs" />
     <Compile Include="ConditionalRenderer.cs" />
     <Compile Include="Configuration\DiskBackedBundleCache.cs" />
     <Compile Include="Configuration\CompileTimeManifestBundleContainerFactory.cs" />
@@ -188,6 +191,7 @@
     <Compile Include="NullPlaceholderTracker.cs" />
     <Compile Include="PlaceholderTracker.cs" />
     <Compile Include="ReferenceBuilder.cs" />
+    <Compile Include="CombinedBundles\ScriptAndTemplateBundle.cs" />
     <Compile Include="Scripts\AssignScriptRenderer.cs" />
     <Compile Include="Scripts\DebugScriptBundleHtmlRenderer.cs" />
     <Compile Include="Scripts\Manifests\ExternalScriptBundleManifest.cs" />
