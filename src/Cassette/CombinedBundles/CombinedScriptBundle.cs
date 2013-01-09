@@ -39,7 +39,6 @@ namespace Cassette.ScriptAndTemplate
             }
 
             CombinedBundleUtility.RemoveAssetReferences(BundleNames, assets);
-            Hash = CombinedBundleUtility.ComputeCombinedHash(Bundles);
 
             settings.IsDebuggingEnabled = isDebug;
             new AssignScriptRenderer().Process(this, settings);

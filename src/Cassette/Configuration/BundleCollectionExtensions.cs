@@ -154,6 +154,7 @@ namespace Cassette.Configuration
                 {
                     var bundle = CreateScriptAndTemplateBundle(path.Item1, path.Item1, path.Item2, templateProcessor, bundleCollection.Settings);
                     bundles.Add(bundle);
+                    bundleNames.Add(path.Item2);
                 }
 
             }

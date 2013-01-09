@@ -46,14 +46,12 @@ namespace Cassette.ScriptAndTemplate
                 AddReference(reference);
             }
 
+            CombinedBundleUtility.RemoveAssetReferences(new[] { ScriptBundle.Path, HtmlTemplateBundle.Path }, assets);
+
             settings.IsDebuggingEnabled = isDebug;
             new AssignScriptRenderer().Process(this, settings);
-            if (!settings.IsDebuggingEnabled)
-            {
-                ConcatenateAssets();
-                new MinifyAssets(new MicrosoftJavaScriptMinifier()).Process(this, settings);
-            }
-
+            
+            CombinedBundleUtility.CompressBundle(this, new MicrosoftJavaScriptMinifier(), settings);
         }
 
         internal override string Render()

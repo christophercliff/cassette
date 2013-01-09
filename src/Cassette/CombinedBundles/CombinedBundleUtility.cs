@@ -11,25 +11,6 @@ namespace Cassette.ScriptAndTemplate
 {
     public static class CombinedBundleUtility 
     {
-        public static byte[] ComputeCombinedHash(List<Bundle> bundles)
-        {
-            var hashLength = 0;
-            foreach (var bundle in bundles)
-            {
-                hashLength += bundle.Hash.Length;
-            }
-
-            var hash = new byte[hashLength];
-            var copiedlength = 0;
-            foreach (var bundle in bundles)
-            {
-                bundle.Hash.CopyTo(hash, copiedlength);
-                copiedlength += bundle.Hash.Length;
-            }
-
-            return hash;
-        }
-
         public static void RemoveAssetReferences(IEnumerable<string> bundleNames, List<IAsset> assets)
         {
             foreach (var bundleName in bundleNames)
@@ -65,6 +46,8 @@ namespace Cassette.ScriptAndTemplate
 
         public static void CompressBundle(Bundle bundle, IAssetTransformer minifier, CassetteSettings settings)
         {
+            new AssignHash().Process(bundle, settings);
+
             if (!settings.IsDebuggingEnabled)
             {
                 bundle.ConcatenateAssets();
