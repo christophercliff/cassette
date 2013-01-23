@@ -38,7 +38,7 @@ namespace Cassette.ScriptAndTemplate
                 assets.AddRange(bundle.Assets);
             }
 
-            CombinedBundleUtility.RemoveAssetReferences(BundleNames, assets);
+            CombinedBundleUtility.RemoveAssetReferences(BundleNames, assets, settings);
 
             settings.IsDebuggingEnabled = isDebug;
             new AssignScriptRenderer().Process(this, settings);

@@ -46,7 +46,7 @@ namespace Cassette.ScriptAndTemplate
                 AddReference(reference);
             }
 
-            CombinedBundleUtility.RemoveAssetReferences(new[] { ScriptBundle.Path, HtmlTemplateBundle.Path }, assets);
+            CombinedBundleUtility.RemoveAssetReferences(new[] { ScriptBundle.Path, HtmlTemplateBundle.Path }, assets, settings);
 
             settings.IsDebuggingEnabled = isDebug;
             new AssignScriptRenderer().Process(this, settings);

@@ -11,8 +11,13 @@ namespace Cassette.ScriptAndTemplate
 {
     public static class CombinedBundleUtility 
     {
-        public static void RemoveAssetReferences(IEnumerable<string> bundleNames, List<IAsset> assets)
+        public static void RemoveAssetReferences(IEnumerable<string> bundleNames, List<IAsset> assets, CassetteSettings settings)
         {
+            if(settings.IsDebuggingEnabled)
+            {
+                return;
+            }
+
             foreach (var bundleName in bundleNames)
             {
                 var name = bundleName;
