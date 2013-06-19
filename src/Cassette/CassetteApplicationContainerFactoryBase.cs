@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System;
+using System.Collections.Generic;
 using Cassette.Configuration;
+using Cassette.DependencyGraphInteration;
 
 namespace Cassette
 {
@@ -33,14 +34,7 @@ namespace Cassette
         public virtual CassetteApplicationContainer<T> CreateContainer()
         {
             cassetteConfigurations = CreateCassetteConfigurations();
-            if (string.IsNullOrEmpty(configurationSection.PrecompiledManifest))
-            {
-                return CreateContainerFromConfiguration();
-            }
-            else
-            {
-                return CreateContainerFromCompileTimeManifest();
-            }
+            return CreateContainerFromConfiguration();
         }
 
         CassetteApplicationContainer<T> CreateContainerFromConfiguration()
@@ -64,14 +58,20 @@ namespace Cassette
             {
                 var cacheVersion = GetConfigurationVersion();
                 var settings = new CassetteSettings(cacheVersion);
-                var bundleContainerFactory = settings.GetBundleContainerFactory(CassetteConfigurations);
-                var bundleContainer = bundleContainerFactory.CreateBundleContainer();
+                var dependencyInteractionFactory = new DependencyGraphInteractionFactory(null);
+                var dependencyInteractor = dependencyInteractionFactory.GetDependencyGraphInteration();
+                var result = dependencyInteractor.CreateBundleContainer(settings, CassetteConfigurations);
+
+                if(result.Exception != null)
+                {
+                    throw new Exception();
+                }
 
                 Trace.Source.TraceInformation("IsDebuggingEnabled: {0}", settings.IsDebuggingEnabled);
                 Trace.Source.TraceInformation("Cache version: {0}", cacheVersion);
                 Trace.Source.TraceInformation("Creating Cassette application object");
 
-                return CreateCassetteApplicationCore(bundleContainer, settings);
+                return CreateCassetteApplicationCore(result.BundleContainer, settings);
             }
         }
 
@@ -80,38 +80,5 @@ namespace Cassette
             get { return cassetteConfigurations; }
         }
 
-        CassetteApplicationContainer<T> CreateContainerFromCompileTimeManifest()
-        {
-            var settings = CreateSettingsForBundlesFromCompileTime();
-            foreach (var configuration in CassetteConfigurations)
-            {
-                configuration.Configure(null, settings);
-            }
-            var bundleContainerFactory = new CompileTimeManifestBundleContainerFactory(PrecompiledManifestFilename, settings);
-            var bundleContainer = bundleContainerFactory.CreateBundleContainer();
-
-            return new CassetteApplicationContainer<T>(
-                () => CreateCassetteApplicationCore(bundleContainer, settings)
-            );
-        }
-
-        CassetteSettings CreateSettingsForBundlesFromCompileTime()
-        {
-            return new CassetteSettings("")
-            {
-                IsUsingPrecompiledManifest = true,
-                UrlGenerator = new UrlGenerator(
-                    new VirtualDirectoryPrepender(virtualDirectory),
-                    UrlGenerator.RoutePrefix
-                ),
-                IsHtmlRewritingEnabled = configurationSection.RewriteHtml,
-                AllowRemoteDiagnostics = configurationSection.AllowRemoteDiagnostics
-            };
-        }
-
-        string PrecompiledManifestFilename
-        {
-            get { return Path.Combine(physicalDirectory, configurationSection.PrecompiledManifest); }
-        }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cassette.Configuration;
+using Cassette.DependencyGraphInteration;
 
 namespace Cassette
 {
@@ -37,8 +38,12 @@ namespace Cassette
             return GetOrCreateReferenceBuilder(CreateReferenceBuilder);
         }
 
-        protected abstract IReferenceBuilder GetOrCreateReferenceBuilder(Func<IReferenceBuilder> create);
+        public IInteractWithDependencyGraph GetInteration()
+        {
+            return new DependencyGraphInteractionFactory(this).GetDependencyGraphInteration();
+        }
 
+        protected abstract IReferenceBuilder GetOrCreateReferenceBuilder(Func<IReferenceBuilder> create);
         protected abstract IPlaceholderTracker GetPlaceholderTracker();
 
         public void Dispose()

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Cassette.Configuration;
+using Cassette.DependencyGraphInteration;
 
 namespace Cassette
 {
@@ -13,5 +14,7 @@ namespace Cassette
         T FindBundleContainingPath<T>(string path) where T : Bundle;
 
         IReferenceBuilder GetReferenceBuilder();
+
+        IInteractWithDependencyGraph GetInteration();
     }
 }
