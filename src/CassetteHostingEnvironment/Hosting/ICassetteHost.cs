@@ -1,5 +1,5 @@
-﻿using System.ServiceModel;
-using Cassette;
+﻿using System.IO;
+using System.ServiceModel;
 using Cassette.DependencyGraphInteration.InterationResults;
 
 namespace CassetteHostingEnvironment.Hosting
@@ -17,9 +17,9 @@ namespace CassetteHostingEnvironment.Hosting
         StringInterationResult Render(BundleType type, string location);
 
         [OperationContract]
-        StreamInterationResult GetAsset(string path);
+        Stream GetAsset(string path);
 
         [OperationContract]
-        StreamInterationResult GetBundle(BundleType type, string path);
+        Stream GetBundle(BundleType type, string path);
     }
 }

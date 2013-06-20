@@ -99,17 +99,17 @@ namespace Cassette.Web
             response.SuppressContent = true;
         }
 
-        void SendBundle(StreamInterationResult bundle, string actualETag)
+        void SendBundle(StreamInterationResult stream, string actualETag)
         {
-            response.ContentType = bundle.ContentType;
+            response.ContentType = stream.ContentType;
             CacheLongTime(actualETag);
 
             var encoding = request.Headers["Accept-Encoding"];
             response.Filter = EncodeStreamAndAppendResponseHeaders(response.Filter, encoding);
-            
-            using (var assetStream = bundle.ResourceStream)
+
+            using (stream)
             {
-                assetStream.CopyTo(response.OutputStream);
+                stream.CopyTo(response.OutputStream);
             }
         }
 

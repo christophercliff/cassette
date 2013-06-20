@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ServiceModel;
 using System.ServiceProcess;
 using CassetteHostingEnvironment.Hosting;
@@ -35,7 +34,10 @@ namespace CassetteHostingEnvironment
             ServiceHost = new ServiceHost(typeof(CassetteHost), new Uri("net.pipe://localhost"));
 
             ServiceHost.AddServiceEndpoint(typeof(ICassetteHost),
-                new NetNamedPipeBinding(),
+                new NetNamedPipeBinding
+                {
+                    TransferMode = TransferMode.Streamed,
+                },
                 "HostingService");
 
             ServiceHost.Open();

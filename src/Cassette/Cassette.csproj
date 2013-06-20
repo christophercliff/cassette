@@ -89,6 +89,7 @@
     <Compile Include="Configuration\IFileHelper.cs" />
     <Compile Include="ConstantHtmlRenderer.cs" />
     <Compile Include="DependencyGraphInteration\InterationResults\BundleContainerInteractionResult.cs" />
+    <Compile Include="DependencyGraphInteration\InterationResults\IInterationResult.cs" />
     <Compile Include="DependencyGraphInteration\InterationResults\StringInterationResult.cs" />
     <Compile Include="DependencyGraphInteration\InterationResults\SimpleInteractionResult.cs" />
     <Compile Include="DependencyGraphInteration\DependencyGraphInteractionFactory.cs" />

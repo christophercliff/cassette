@@ -46,11 +46,11 @@ namespace Cassette.Web
             SendAsset(request, response, result);
         }
 
-        void SendAsset(HttpRequestBase request, HttpResponseBase response, StreamInterationResult result)
+        void SendAsset(HttpRequestBase request, HttpResponseBase response, StreamInterationResult stream)
         {
-            response.ContentType = result.ContentType;
+            response.ContentType = stream.ContentType;
 
-            var actualETag = "\"" + result.Hash + "\"";
+            var actualETag = "\"" + stream.Hash + "\"";
             response.Cache.SetCacheability(HttpCacheability.Public);
             response.Cache.SetETag(actualETag);
 
@@ -61,7 +61,7 @@ namespace Cassette.Web
             }
             else
             {
-                using (var stream = result.ResourceStream)
+                using (stream)
                 {
                     stream.CopyTo(response.OutputStream); 
                 }

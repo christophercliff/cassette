@@ -63,10 +63,9 @@ namespace Cassette.DependencyGraphInteration.InMemory
                     };
                 }
 
-                return new StreamInterationResult
+                return new StreamInterationResult(asset.OpenStream())
                 {
                     Hash = asset.Hash.ToHexString(),
-                    ResourceStream = asset.OpenStream(),
                     ContentType = bundle.ContentType
                 };
 
@@ -89,10 +88,9 @@ namespace Cassette.DependencyGraphInteration.InMemory
                     };
                 }
 
-                return new StreamInterationResult
+                return new StreamInterationResult(bundle.OpenStream())
                 {
                     Hash = bundle.Hash.ToHexString(),
-                    ResourceStream = bundle.OpenStream(),
                     ContentType = bundle.ContentType
                 };
 
@@ -100,7 +98,7 @@ namespace Cassette.DependencyGraphInteration.InMemory
         }
 
         private T PerformInteraction<T>(Func<T> action)
-            where T : SimpleInteractionResult, new()
+            where T : IInterationResult, new()
         {
             try
             {

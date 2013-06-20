@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Cassette.DependencyGraphInteration.InterationResults;
 
 namespace CassetteHostingEnvironment.Hosting
@@ -20,21 +21,30 @@ namespace CassetteHostingEnvironment.Hosting
             return new StringInterationResult();
         }
 
-        public StreamInterationResult GetAsset(string path)
+        public Stream GetAsset(string path)
         {
-            return new StreamInterationResult
-            {
-                NotFound = true,
-                Hash = "bwuh!"
-            };
+            return File.Open(@"c:\test1.txt", FileMode.Open);
         }
 
-        public StreamInterationResult GetBundle(BundleType type, string path)
+        public Stream GetBundle(BundleType type, string path)
         {
-            return new StreamInterationResult
+            return File.Open(@"c:\test2.txt", FileMode.Open);
+        }
+
+        private T PerformInteraction<T>(Func<T> action)
+            where T : IInterationResult, new()
+        {
+            try
             {
-                ContentType = "Bwuh"
-            };
+                return action();
+            }
+            catch (Exception exception)
+            {
+                return new T
+                {
+                    Exception = exception
+                };
+            }
         }
     }
 }
