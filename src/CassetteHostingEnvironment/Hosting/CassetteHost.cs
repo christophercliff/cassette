@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Cassette.DependencyGraphInteration.InterationResults;
+using CassetteHostingEnvironment.DependencyGraphInteration.Service;
 
 namespace CassetteHostingEnvironment.Hosting
 {
@@ -16,7 +18,7 @@ namespace CassetteHostingEnvironment.Hosting
             return new SimpleInteractionResult();
         }
 
-        public StringInterationResult Render(BundleType type, string location)
+        public StringInterationResult Render(IEnumerable<BundleRequest> referencedBundles, BundleType type, string location)
         {
             return new StringInterationResult();
         }
@@ -26,7 +28,7 @@ namespace CassetteHostingEnvironment.Hosting
             return File.Open(@"c:\test1.txt", FileMode.Open);
         }
 
-        public Stream GetAssetMetaData(string path)
+        public StreamMetaDataResult GetAssetMetaData(string path)
         {
             throw new NotImplementedException();
         }
@@ -36,7 +38,7 @@ namespace CassetteHostingEnvironment.Hosting
             return File.Open(@"c:\test2.txt", FileMode.Open);
         }
 
-        public Stream GetBundleMetaData(BundleType type, string path)
+        public StreamMetaDataResult GetBundleMetaData(BundleType type, string path)
         {
             throw new NotImplementedException();
         }

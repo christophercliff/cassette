@@ -3,12 +3,11 @@ using System.IO;
 
 namespace Cassette.DependencyGraphInteration.InterationResults
 {
-    public class StreamMetaDataResult : IInterationResult
+    public class StreamMetaDataResult : SimpleInteractionResult
     {
         public bool NotFound { get; set; }
         public string Hash { get; set; }
         public string ContentType { get; set; }
-        public Exception Exception { get; set; }
     }
 
     public class StreamInterationResult : Stream, IInterationResult
@@ -20,7 +19,7 @@ namespace Cassette.DependencyGraphInteration.InterationResults
 
         public StreamInterationResult() { }
 
-        Stream stream;
+        readonly Stream stream;
         public StreamInterationResult(Stream stream, StreamMetaDataResult metaData = null)
         {
             this.stream = stream;

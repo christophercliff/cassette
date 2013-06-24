@@ -1,6 +1,8 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.ServiceModel;
 using Cassette.DependencyGraphInteration.InterationResults;
+using CassetteHostingEnvironment.DependencyGraphInteration.Service;
 
 namespace CassetteHostingEnvironment.Hosting
 {
@@ -14,18 +16,18 @@ namespace CassetteHostingEnvironment.Hosting
         SimpleInteractionResult ReferenceBundle(string path, string location);
 
         [OperationContract]
-        StringInterationResult Render(BundleType type, string location);
+        StringInterationResult Render(IEnumerable<BundleRequest> referencedBundles, BundleType type, string location);
 
         [OperationContract]
         Stream GetAsset(string path);
 
         [OperationContract]
-        Stream GetAssetMetaData(string path);
+        StreamMetaDataResult GetAssetMetaData(string path);
 
         [OperationContract]
         Stream GetBundle(BundleType type, string path);
 
         [OperationContract]
-        Stream GetBundleMetaData(BundleType type, string path);
+        StreamMetaDataResult GetBundleMetaData(BundleType type, string path);
     }
 }

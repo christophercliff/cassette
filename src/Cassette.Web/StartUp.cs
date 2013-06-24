@@ -130,6 +130,8 @@ namespace Cassette.Web
             }
         }
 
+        //static bool IsCassette
+
         static IEnumerable<Assembly> GetApplicationAssemblies()
         {
             return BuildManager.GetReferencedAssemblies().Cast<Assembly>();

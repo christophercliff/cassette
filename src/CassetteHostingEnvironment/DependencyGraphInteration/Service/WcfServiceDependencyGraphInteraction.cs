@@ -73,7 +73,8 @@ namespace CassetteHostingEnvironment.DependencyGraphInteration.Service
             {
                 var type = typeof(T);
                 var bundleType = TypeToBundleType[type];
-                return hostService.Render(bundleType, location);
+                var bundles = provider.GetCachedValue();
+                return hostService.Render(bundles, bundleType, location);
             });
         }
 
@@ -81,8 +82,9 @@ namespace CassetteHostingEnvironment.DependencyGraphInteration.Service
         {
             return PerformInteraction(hostService =>
             {
+                var metaData = GetMetaData(() => hostService.GetAssetMetaData(path));
                 var stream = hostService.GetAsset(path);
-                return new StreamInterationResult(stream, metaData: null);
+                return new StreamInterationResult(stream, metaData);
             });
         }
 
@@ -93,10 +95,23 @@ namespace CassetteHostingEnvironment.DependencyGraphInteration.Service
             {
                 var type = typeof(T);
                 var bundleType = TypeToBundleType[type];
+                var metaData = GetMetaData(() => hostService.GetAssetMetaData(path));
                 var stream = hostService.GetBundle(bundleType, path);
 
-                return new StreamInterationResult(stream, metaData: null);
+                return new StreamInterationResult(stream, metaData);
             });
+        }
+
+        private StreamMetaDataResult GetMetaData(Func<StreamMetaDataResult> getMetaData)
+        {
+            var metaData = getMetaData();
+
+            if (metaData.Exception != null)
+            {
+                throw metaData.Exception;
+            }
+
+            return metaData;
         }
 
         private T PerformInteraction<T>(Func<ICassetteHost, T> action)
@@ -105,7 +120,7 @@ namespace CassetteHostingEnvironment.DependencyGraphInteration.Service
             try
             {
                 using(var pipeFactory = new ChannelFactory<ICassetteHost>(new NetNamedPipeBinding { TransferMode = TransferMode.Streamed},
-                                                                new EndpointAddress("net.pipe://localhost/HostingService")))
+                                                                          new EndpointAddress("net.pipe://localhost/HostingService")))
                 {
                     var proxy = pipeFactory.CreateChannel();
                     return action(proxy);

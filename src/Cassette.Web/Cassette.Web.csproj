@@ -71,13 +71,13 @@
     <Compile Include="CassetteApplication.cs" />
     <Compile Include="CassetteApplicationContainerFactory.cs" />
     <Compile Include="DependencyGraphImplementations\CachePerRequestProvider.cs" />
+    <Compile Include="DependencyGraphImplementations\DependencyGraphInteractionFactory.cs" />
     <Compile Include="HttpContextExtensions.cs" />
     <Compile Include="IsolatedStorageContainer.cs" />
     <Compile Include="DelegateCassetteConfigurationFactory.cs" />
     <Compile Include="StartUpTraceRecorder.cs" />
     <Compile Include="RawFileReferenceFinder.cs" />
     <Compile Include="StringBuilderTraceListener.cs" />
-    <None Include="CassetteConfiguration.cs.pp" />
     <Compile Include="CassetteHttpModule.cs" />
     <Compile Include="AssetRequestHandler.cs" />
     <Compile Include="CassetteRoute.cs" />

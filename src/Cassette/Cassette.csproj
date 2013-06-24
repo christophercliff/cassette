@@ -95,7 +95,7 @@
     <Compile Include="DependencyGraphInteration\InterationResults\BundleContainerInteractionResult.cs" />
     <Compile Include="DependencyGraphInteration\InterationResults\IInterationResult.cs" />
     <Compile Include="DependencyGraphInteration\InterationResults\SimpleInteractionResult.cs" />
-    <Compile Include="DependencyGraphInteration\InterationResults\StreamInterationResult.cs" />
+    <Compile Include="DependencyGraphInteration\InterationResults\StreamMetaDataResult.cs" />
     <Compile Include="DependencyGraphInteration\InterationResults\StringInterationResult.cs" />
     <Compile Include="HtmlTemplates\DebugHtmlTemplateBundleRenderer.cs" />
     <Compile Include="HtmlTemplates\HtmlConstants.cs" />
