@@ -47,6 +47,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DependencyGraphInteration\DependencyGraphInteractionFactory.cs" />
+    <Compile Include="DependencyGraphInteration\IDependencyGraphInteractionFactory.cs" />
+    <Compile Include="DependencyGraphInteration\IInteractWithDependencyGraph.cs" />
+    <Compile Include="DependencyGraphInteration\InMemory\InMemoryDependencyGraphInteraction.cs" />
+    <Compile Include="DependencyGraphInteration\InterationResults\BundleContainerInteractionResult.cs" />
+    <Compile Include="DependencyGraphInteration\InterationResults\IInterationResult.cs" />
+    <Compile Include="DependencyGraphInteration\InterationResults\SimpleInteractionResult.cs" />
+    <Compile Include="DependencyGraphInteration\InterationResults\StreamInterationResult.cs" />
+    <Compile Include="DependencyGraphInteration\InterationResults\StringInterationResult.cs" />
+    <Compile Include="DependencyGraphInteration\Service\BundleRequest.cs" />
+    <Compile Include="DependencyGraphInteration\Service\WcfServiceDependencyGraphInteraction.cs" />
     <Compile Include="Hosting\BundleType.cs" />
     <Compile Include="Hosting\CassetteHost.cs" />
     <Compile Include="Hosting\ICassetteHost.cs" />
@@ -100,6 +111,7 @@
       <Name>Cassette</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

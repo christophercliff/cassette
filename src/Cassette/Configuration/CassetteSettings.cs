@@ -152,7 +152,7 @@ namespace Cassette.Configuration
             get { return cassetteManifestCache.Value; }
         }
 
-        internal IBundleContainerFactory GetBundleContainerFactory(IEnumerable<ICassetteConfiguration> cassetteConfigurations)
+        public IBundleContainerFactory GetBundleContainerFactory(IEnumerable<ICassetteConfiguration> cassetteConfigurations)
         {
             var bundles = ExecuteCassetteConfiguration(cassetteConfigurations);
             if (IsDebuggingEnabled)

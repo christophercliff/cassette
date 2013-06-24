@@ -88,15 +88,6 @@
     <Compile Include="Configuration\ICassetteConfigurationFactory.cs" />
     <Compile Include="Configuration\IFileHelper.cs" />
     <Compile Include="ConstantHtmlRenderer.cs" />
-    <Compile Include="DependencyGraphInteration\InterationResults\BundleContainerInteractionResult.cs" />
-    <Compile Include="DependencyGraphInteration\InterationResults\IInterationResult.cs" />
-    <Compile Include="DependencyGraphInteration\InterationResults\StringInterationResult.cs" />
-    <Compile Include="DependencyGraphInteration\InterationResults\SimpleInteractionResult.cs" />
-    <Compile Include="DependencyGraphInteration\DependencyGraphInteractionFactory.cs" />
-    <Compile Include="DependencyGraphInteration\IDependencyGraphInteractionFactory.cs" />
-    <Compile Include="DependencyGraphInteration\IInteractWithDependencyGraph.cs" />
-    <Compile Include="DependencyGraphInteration\InMemory\InMemoryDependencyGraphInteraction.cs" />
-    <Compile Include="DependencyGraphInteration\InterationResults\StreamInterationResult.cs" />
     <Compile Include="HtmlTemplates\DebugHtmlTemplateBundleRenderer.cs" />
     <Compile Include="HtmlTemplates\HtmlConstants.cs" />
     <Compile Include="HtmlTemplates\Manifests\HtmlTemplateBundleManifestWriter.cs" />
@@ -311,9 +302,7 @@
     <None Include="Cassette.symbols.nutrans" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DependencyGraphInteration\Service\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
