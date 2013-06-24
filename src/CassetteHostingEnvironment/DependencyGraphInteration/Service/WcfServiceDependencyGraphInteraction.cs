@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ServiceModel;
-using System.Web;
 using Cassette;
 using Cassette.Configuration;
 using Cassette.DependencyGraphInteration;
@@ -16,16 +15,11 @@ namespace CassetteHostingEnvironment.DependencyGraphInteration.Service
 {
     public class WcfServiceDependencyGraphInteraction : IInteractWithDependencyGraph
     {
-        readonly ICachePerRequestProvider application;
+        readonly ICachePerRequestProvider<List<BundleRequest>> provider;
 
-        public WcfServiceDependencyGraphInteraction(ICachePerRequestProvider provider)
+        public WcfServiceDependencyGraphInteraction(ICachePerRequestProvider<List<BundleRequest>> provider)
         {
-            this.application = application;
-        }
-
-        private HttpContext GetHttpContext()
-        {
-            return HttpContext.Current;
+            this.provider = provider;
         }
 
         public BundleContainerInteractionResult CreateBundleContainer(CassetteSettings settings, IEnumerable<ICassetteConfiguration> configs)
@@ -46,13 +40,11 @@ namespace CassetteHostingEnvironment.DependencyGraphInteration.Service
             });   
         }
 
-        const string ReferencedBundlesContextKey = "Bundle_References_Per_Request";
         public SimpleInteractionResult ReferenceBundle(string path, string location)
         {
             return PerformInteraction(hostService =>
             {
-                var itemsBag = GetHttpContext().Items;
-                var bundlesForThisRequest = itemsBag[ReferencedBundlesContextKey] as List<BundleRequest> ??  new List<BundleRequest>();
+                var bundlesForThisRequest = provider.GetCachedValue() ??  new List<BundleRequest>();
 
                 bundlesForThisRequest.Add(new BundleRequest
                 {
@@ -60,7 +52,7 @@ namespace CassetteHostingEnvironment.DependencyGraphInteration.Service
                     Location = location
                 });
 
-                itemsBag[ReferencedBundlesContextKey] = bundlesForThisRequest;
+                provider.SetCachedValue(bundlesForThisRequest);
 
                 return new SimpleInteractionResult();
             });

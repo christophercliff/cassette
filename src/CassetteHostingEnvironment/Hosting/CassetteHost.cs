@@ -26,9 +26,19 @@ namespace CassetteHostingEnvironment.Hosting
             return File.Open(@"c:\test1.txt", FileMode.Open);
         }
 
+        public Stream GetAssetMetaData(string path)
+        {
+            throw new NotImplementedException();
+        }
+
         public Stream GetBundle(BundleType type, string path)
         {
             return File.Open(@"c:\test2.txt", FileMode.Open);
+        }
+
+        public Stream GetBundleMetaData(BundleType type, string path)
+        {
+            throw new NotImplementedException();
         }
 
         private T PerformInteraction<T>(Func<T> action)

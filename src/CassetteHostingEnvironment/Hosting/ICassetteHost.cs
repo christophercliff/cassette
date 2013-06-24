@@ -20,6 +20,12 @@ namespace CassetteHostingEnvironment.Hosting
         Stream GetAsset(string path);
 
         [OperationContract]
+        Stream GetAssetMetaData(string path);
+
+        [OperationContract]
         Stream GetBundle(BundleType type, string path);
+
+        [OperationContract]
+        Stream GetBundleMetaData(BundleType type, string path);
     }
 }

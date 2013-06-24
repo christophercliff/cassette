@@ -70,6 +70,7 @@
     <Compile Include="AssignUrlGenerator.cs" />
     <Compile Include="CassetteApplication.cs" />
     <Compile Include="CassetteApplicationContainerFactory.cs" />
+    <Compile Include="DependencyGraphImplementations\CachePerRequestProvider.cs" />
     <Compile Include="HttpContextExtensions.cs" />
     <Compile Include="IsolatedStorageContainer.cs" />
     <Compile Include="DelegateCassetteConfigurationFactory.cs" />
@@ -111,6 +112,10 @@
     <ProjectReference Include="..\Cassette.Views\Cassette.Views.csproj">
       <Project>{3A021487-A395-4FE6-9B41-336D0F1E6AD0}</Project>
       <Name>Cassette.Views</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CassetteHostingEnvironment\CassetteHostingEnvironment.csproj">
+      <Project>{C4AE205A-FF0D-4788-8A7E-8C9D64E58553}</Project>
+      <Name>CassetteHostingEnvironment</Name>
     </ProjectReference>
     <ProjectReference Include="..\Cassette\Cassette.csproj">
       <Project>{A5CCF9D3-5D49-4BFC-B9A6-9EC9E0E29C50}</Project>
