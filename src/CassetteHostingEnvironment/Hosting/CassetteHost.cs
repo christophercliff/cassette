@@ -1,46 +1,162 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
+using Cassette;
+using Cassette.Configuration;
 using Cassette.DependencyGraphInteration.InterationResults;
+using Cassette.HtmlTemplates;
+using Cassette.Scripts;
+using Cassette.Stylesheets;
+using Cassette.Utilities;
 using CassetteHostingEnvironment.DependencyGraphInteration.Service;
+using CassetteHostingEnvironment.DependencyGraphInteration.Settings;
 
 namespace CassetteHostingEnvironment.Hosting
 {
     public class CassetteHost : ICassetteHost
     {
-        public SimpleInteractionResult AppStart()
-        {
-            return new SimpleInteractionResult();
-        }
+        private static CassetteApplicationContainer<CassetteServiceApplication> _container;
 
-        public SimpleInteractionResult ReferenceBundle(string path, string location)
+        public SimpleInteractionResult AppStart(HostedCassetteSettings settings)
         {
-            return new SimpleInteractionResult();
+            return PerformInteraction(() =>
+            {
+                var assembly = Assembly.LoadFile(settings.AssemblyPath);
+
+                var factory = new CassetteServiceContainerFactory(
+                    new AssemblyScanningCassetteConfigurationFactory(new[] { assembly }),
+                    new CassetteConfigurationSection
+                    {
+                        RewriteHtml = false,
+                        WatchFileSystem = settings.IsDebug
+                    },
+                    settings.AppDomainAppPath,
+                    settings.AppDomainAppVirtualPath,
+                    settings.IsDebug
+                    );
+
+                _container = factory.CreateContainer();
+                CassetteApplicationContainer.SetApplicationAccessor(() => _container.Application);
+                var forceCreation = _container.Application;
+                return new SimpleInteractionResult();
+            });
         }
 
         public StringInterationResult Render(IEnumerable<BundleRequest> referencedBundles, BundleType type, string location)
         {
-            return new StringInterationResult();
+            return PerformInteraction(() =>
+            {
+                var referenceBuilder = _container.Application.GetReferenceBuilder();
+                foreach(var bundleToReference in referencedBundles)
+                {
+                    referenceBuilder.Reference(bundleToReference.Path, bundleToReference.Location);
+                }
+
+                string ret;
+                switch(type)
+                {
+                    case BundleType.Script:
+                        ret = referenceBuilder.Render<ScriptBundle>(location);
+                        break;
+                    case BundleType.StyleSheet:
+                        ret = referenceBuilder.Render<StylesheetBundle>(location);
+                        break;
+                    case BundleType.HtmlTemplate:
+                        ret = referenceBuilder.Render<HtmlTemplateBundle>(location);
+                        break;
+                    default:
+                        throw new Exception("Unknown bundle type: " + type.ToString());
+                }
+
+                return new StringInterationResult
+                {
+                    ResourceString = ret
+                };
+            });
         }
 
         public Stream GetAsset(string path)
         {
-            return File.Open(@"c:\test1.txt", FileMode.Open);
+            IAsset asset;
+            Bundle bundle;
+            if (!_container.Application.Bundles.TryGetAssetByPath(path, out asset, out bundle))
+            {
+                throw new Exception("Path not found.");
+            }
+
+            return asset.OpenStream();
         }
+
 
         public StreamMetaDataResult GetAssetMetaData(string path)
         {
-            throw new NotImplementedException();
+            return PerformInteraction(() =>
+            {
+                IAsset asset;
+                Bundle bundle;
+                if (!_container.Application.Bundles.TryGetAssetByPath(path, out asset, out bundle))
+                {
+                    return new StreamMetaDataResult
+                    {
+                        NotFound = true
+                    };
+                }
+
+                return new StreamMetaDataResult
+                {
+                    Hash = asset.Hash.ToHexString(),
+                    ContentType = bundle.ContentType
+                };
+            });
         }
 
         public Stream GetBundle(BundleType type, string path)
         {
-            return File.Open(@"c:\test2.txt", FileMode.Open);
+            
+            var bundle = FindBundle(type, path);
+            if (bundle == null)
+            {
+                throw new Exception("Unknown path: " + path);
+            }
+
+            return bundle.OpenStream();   
+        }
+
+        private Bundle FindBundle(BundleType type, string path)
+        {
+            switch (type)
+            {
+                case BundleType.Script:
+                    return  _container.Application.FindBundleContainingPath<ScriptBundle>(path);
+                case BundleType.StyleSheet:
+                    return _container.Application.FindBundleContainingPath<StylesheetBundle>(path);
+                case BundleType.HtmlTemplate:
+                    return _container.Application.FindBundleContainingPath<HtmlTemplateBundle>(path);
+                default:
+                    throw new Exception("Unknown bundle type: " + type.ToString());
+            }
         }
 
         public StreamMetaDataResult GetBundleMetaData(BundleType type, string path)
         {
-            throw new NotImplementedException();
+            return PerformInteraction(() =>
+            {
+                var bundle = FindBundle(type, path);
+                if (bundle == null)
+                {
+                    return new StreamMetaDataResult
+                    {
+                        NotFound = true
+                    };
+                }
+
+                return new StreamMetaDataResult
+                {
+                    Hash = bundle.Hash.ToHexString(),
+                    ContentType = bundle.ContentType
+                };
+            });
         }
 
         private T PerformInteraction<T>(Func<T> action)

@@ -1,9 +1,8 @@
-﻿using Cassette.Configuration;
-using Cassette.IO;
+﻿using Cassette.IO;
 
-namespace Cassette.Web
+namespace Cassette.Configuration
 {
-    class InitialConfiguration : ICassetteConfiguration
+    public class InitialConfiguration : ICassetteConfiguration
     {
         readonly CassetteConfigurationSection configurationSection;
         readonly bool isAspNetDebuggingEnabled;

@@ -26,7 +26,7 @@ namespace CassetteHostingEnvironment.DependencyGraphInteration.Service
         {
             return PerformInteraction(hostService =>
             {
-                var ret = hostService.AppStart();
+                var ret = hostService.AppStart(settings: null);
 
                 if(ret.Exception != null)
                 {

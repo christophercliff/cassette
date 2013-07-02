@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ServiceModel;
 using System.ServiceProcess;
+using CassetteHostingEnvironment.DependencyGraphInteration.Service;
+using CassetteHostingEnvironment.DependencyGraphInteration.Settings;
 using CassetteHostingEnvironment.Hosting;
 
 namespace CassetteHostingEnvironment
@@ -14,7 +16,10 @@ namespace CassetteHostingEnvironment
 
         public static void Main()
         {
-            Run(new CassetteHostingService());
+            //Run();\
+            var service = new CassetteHostingService();
+            service.OnStart(null);
+            Console.ReadLine();
         }
 
         public ServiceHost ServiceHost = null;
@@ -37,6 +42,7 @@ namespace CassetteHostingEnvironment
                 new NetNamedPipeBinding
                 {
                     TransferMode = TransferMode.Streamed,
+                    MaxReceivedMessageSize = 256000
                 },
                 "HostingService");
 

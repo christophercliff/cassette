@@ -6,7 +6,7 @@ using Cassette.DependencyGraphInteration;
 
 namespace Cassette
 {
-    abstract class CassetteApplicationBase : ICassetteApplication
+    public abstract class CassetteApplicationBase : ICassetteApplication
     {
         protected CassetteApplicationBase(IBundleContainer bundleContainer, CassetteSettings settings)
         {
@@ -51,7 +51,7 @@ namespace Cassette
             bundleContainer.Dispose();
         }
 
-        IReferenceBuilder CreateReferenceBuilder()
+        protected IReferenceBuilder CreateReferenceBuilder()
         {
             return new ReferenceBuilder(
                 bundleContainer,

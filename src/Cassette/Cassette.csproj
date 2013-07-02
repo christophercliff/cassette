@@ -80,6 +80,7 @@
     <Compile Include="CombinedBundles\CombinedStyleSheetBundle.cs" />
     <Compile Include="CombinedBundles\CombinedBundleUtility.cs" />
     <Compile Include="ConditionalRenderer.cs" />
+    <Compile Include="Configuration\AssignUrlGenerator.cs" />
     <Compile Include="Configuration\DiskBackedBundleCache.cs" />
     <Compile Include="Configuration\CompileTimeManifestBundleContainerFactory.cs" />
     <Compile Include="Configuration\FileHelper.cs" />
@@ -87,6 +88,8 @@
     <Compile Include="Configuration\FilePathComparer.cs" />
     <Compile Include="Configuration\ICassetteConfigurationFactory.cs" />
     <Compile Include="Configuration\IFileHelper.cs" />
+    <Compile Include="Configuration\InitialConfiguration.cs" />
+    <Compile Include="Configuration\IsolatedStorageContainer.cs" />
     <Compile Include="ConstantHtmlRenderer.cs" />
     <Compile Include="DependencyGraphInteration\DependencyGraphInteractionFactory.cs" />
     <Compile Include="DependencyGraphInteration\IDependencyGraphInteractionFactory.cs" />

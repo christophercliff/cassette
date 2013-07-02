@@ -9,7 +9,7 @@ namespace Cassette
     /// <summary>
     /// Creates configuration objects by scanning assemblies for classes that implement <see cref="ICassetteConfiguration"/>.
     /// </summary>
-    class AssemblyScanningCassetteConfigurationFactory : ICassetteConfigurationFactory
+    public class AssemblyScanningCassetteConfigurationFactory : ICassetteConfigurationFactory
     {
         readonly IEnumerable<Assembly> applicationAssemblies;
 

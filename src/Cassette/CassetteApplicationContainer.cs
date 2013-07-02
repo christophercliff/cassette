@@ -42,7 +42,7 @@ namespace Cassette
         }
     }
 
-    class CassetteApplicationContainer<T> : ICassetteApplicationContainer<T>
+    public class CassetteApplicationContainer<T> : ICassetteApplicationContainer<T>
         where T : ICassetteApplication
     {
         readonly Func<T> createApplication;
@@ -137,10 +137,10 @@ namespace Cassette
                 creationFailed = false;
                 return app;
             }
-            catch
+            catch(Exception e)
             {
                 creationFailed = true;
-                throw; 
+                throw e; 
             }
         }
 

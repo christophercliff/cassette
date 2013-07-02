@@ -1,6 +1,6 @@
 ﻿using System.IO.IsolatedStorage;
 
-namespace Cassette.Web
+namespace Cassette.Configuration
 {
     /// <summary>
     /// Provides the isolated storage used by Cassette.

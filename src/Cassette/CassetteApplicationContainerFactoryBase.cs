@@ -5,7 +5,7 @@ using Cassette.DependencyGraphInteration;
 
 namespace Cassette
 {
-    abstract class CassetteApplicationContainerFactoryBase<T>
+    public abstract class CassetteApplicationContainerFactoryBase<T>
         where T : ICassetteApplication
     {
         readonly ICassetteConfigurationFactory cassetteConfigurationFactory;
@@ -64,7 +64,7 @@ namespace Cassette
 
                 if(result.Exception != null)
                 {
-                    throw new Exception();
+                    throw result.Exception;
                 }
 
                 Trace.Source.TraceInformation("IsDebuggingEnabled: {0}", settings.IsDebuggingEnabled);

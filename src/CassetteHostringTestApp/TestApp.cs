@@ -1,4 +1,8 @@
-﻿using System.ServiceModel;
+﻿using System;
+using System.ServiceModel;
+using System.Xml;
+using CassetteHostingEnvironment.DependencyGraphInteration.Service;
+using CassetteHostingEnvironment.DependencyGraphInteration.Settings;
 using CassetteHostingEnvironment.Hosting;
 
 namespace CassetteHostringTestApp
@@ -7,38 +11,72 @@ namespace CassetteHostringTestApp
     {
         static void Main(string[] args)
         {
-            var pipeFactory = new ChannelFactory<ICassetteHost>(new NetNamedPipeBinding { TransferMode = TransferMode.Streamed},
+            var pipeFactory = new ChannelFactory<ICassetteHost>(new NetNamedPipeBinding
+            {
+                TransferMode = TransferMode.Streamed,
+                MaxReceivedMessageSize = 100000,
+                ReaderQuotas = new XmlDictionaryReaderQuotas
+                {
+                    MaxBytesPerRead = int.MaxValue,
+                    MaxStringContentLength = int.MaxValue
+                }
+            },
                                                                 new EndpointAddress("net.pipe://localhost/HostingService"));
 
-            var proxy = pipeFactory.CreateChannel();
-            using(var result = proxy.GetAsset("Path"))
+            var host = pipeFactory.CreateChannel();
+            host.AppStart(new HostedCassetteSettings
+            {
+                IsDebug = true,
+                AppDomainAppPath = @"C:\src\zocdoc.web\zocdoc_web\ZocDoc.Web\",
+                AppDomainAppVirtualPath = "/",
+                AssemblyPath = @"C:\src\zocdoc.web\zocdoc_web\ZocDoc.Web\Bin\ZocDoc.WebApp.dll"
+            });
+
+            var renderedTest = host.Render(new[] { new BundleRequest() { Path = "app_scripts/modules/framework", },
+                                                   new BundleRequest() { Path = "app_scripts/modules/ui", }
+                                                  },
+                                           BundleType.Script, null);
+
+            var assetPath = renderedTest.ResourceString.Split(new[] { "src=\"" }, StringSplitOptions.None)[1].Split(new[] { "\" type=" }, StringSplitOptions.None)[0];
+            assetPath = "~/" + assetPath.Replace("/_cassette/asset/", "").Split('?')[0];
+
+            using (var asset = host.GetAsset(assetPath))
             {
                 var buffer = new byte[1024];
                 var read = 1;
                 var sum = 0;
                 while (read > 0)
                 {
-                    read = result.Read(buffer, sum, buffer.Length - sum);
+                    read = asset.Read(buffer, sum, buffer.Length - sum);
                     sum += read;
                 }
                 var text = System.Text.Encoding.UTF8.GetString(buffer, 0, sum);
+
+                Console.Write(text);
             }
 
-            using (var result = proxy.GetBundle(BundleType.HtmlTemplate, "Path"))
+            Console.WriteLine("***************");
+            Console.WriteLine("***************");
+            Console.WriteLine("***************");
+            Console.WriteLine("***************");
+            Console.WriteLine("***************");
+
+            using (var asset = host.GetAsset(assetPath))
             {
                 var buffer = new byte[1024];
                 var read = 1;
                 var sum = 0;
                 while (read > 0)
                 {
-                    read = result.Read(buffer, sum, buffer.Length - sum);
+                    read = asset.Read(buffer, sum, buffer.Length - sum);
                     sum += read;
                 }
                 var text = System.Text.Encoding.UTF8.GetString(buffer, 0, sum);
+
+                Console.Write(text);
             }
 
-            //var result2 = proxy.GetBundle(BundleType.HtmlTemplate, "Path");
-            
+            Console.ReadLine();
 
         }
     }

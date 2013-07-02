@@ -3,6 +3,7 @@ using System.IO;
 using System.ServiceModel;
 using Cassette.DependencyGraphInteration.InterationResults;
 using CassetteHostingEnvironment.DependencyGraphInteration.Service;
+using CassetteHostingEnvironment.DependencyGraphInteration.Settings;
 
 namespace CassetteHostingEnvironment.Hosting
 {
@@ -10,10 +11,7 @@ namespace CassetteHostingEnvironment.Hosting
     public interface ICassetteHost
     {
         [OperationContract]
-        SimpleInteractionResult AppStart();
-
-        [OperationContract]
-        SimpleInteractionResult ReferenceBundle(string path, string location);
+        SimpleInteractionResult AppStart(HostedCassetteSettings settings);
 
         [OperationContract]
         StringInterationResult Render(IEnumerable<BundleRequest> referencedBundles, BundleType type, string location);
