@@ -179,5 +179,28 @@ namespace CassetteHostingEnvironment.Hosting
                 };
             }
         }
+
+        public ImageExistsInteractionResult ImageExists(string path)
+        {
+            return PerformInteraction(() =>
+            {
+                var rawFileReferenceFinder = new RawFileReferenceFinder(path);
+                foreach (var bundle in _container.Application.Bundles)
+                {
+                    bundle.Accept(rawFileReferenceFinder);
+                    if (rawFileReferenceFinder.IsRawFileReferenceFound)
+                    {
+                        return new ImageExistsInteractionResult
+                        {
+                            ImageExists = true
+                        };
+                    }
+                }
+                return new ImageExistsInteractionResult
+                {
+                    ImageExists = false
+                };
+            });
+        }
     }
 }

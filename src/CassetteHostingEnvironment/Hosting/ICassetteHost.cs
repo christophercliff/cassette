@@ -27,5 +27,9 @@ namespace CassetteHostingEnvironment.Hosting
 
         [OperationContract]
         StreamMetaDataResult GetBundleMetaData(BundleType type, string path);
+
+        [OperationContract]
+        ImageExistsInteractionResult ImageExists(string path);
+
     }
 }

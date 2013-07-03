@@ -13,5 +13,6 @@ namespace Cassette.DependencyGraphInteration
         StreamInterationResult GetAsset(string path);
         StreamInterationResult GetBundle<T>(string path)
             where T : Bundle;
+        ImageExistsInteractionResult ImageExists(string path);
     }
 }

@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
 
-namespace Cassette.Web
+namespace Cassette
 {
-    class RawFileReferenceFinder : IBundleVisitor
+    public class RawFileReferenceFinder : IBundleVisitor
     {
         readonly string filename;
 

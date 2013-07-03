@@ -128,5 +128,14 @@ namespace CassetteHostingEnvironment.DependencyGraphInteration.Service
 
             return metaData;
         }
+
+
+        public ImageExistsInteractionResult ImageExists(string path)
+        {
+            return _utility.PerformInteraction(hostService =>
+            {
+                return hostService.ImageExists(path);
+            });
+        }
     }
 }

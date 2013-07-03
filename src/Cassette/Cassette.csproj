@@ -96,6 +96,7 @@
     <Compile Include="DependencyGraphInteration\InMemory\InMemoryDependencyGraphInteraction.cs" />
     <Compile Include="DependencyGraphInteration\InterationResults\BundleContainerInteractionResult.cs" />
     <Compile Include="DependencyGraphInteration\InterationResults\IInterationResult.cs" />
+    <Compile Include="DependencyGraphInteration\InterationResults\ImageExistsInteractionResult.cs" />
     <Compile Include="DependencyGraphInteration\InterationResults\SimpleInteractionResult.cs" />
     <Compile Include="DependencyGraphInteration\InterationResults\StreamMetaDataResult.cs" />
     <Compile Include="DependencyGraphInteration\InterationResults\StringInterationResult.cs" />
@@ -202,6 +203,7 @@
     <Compile Include="Manifests\CassetteManifest.cs" />
     <Compile Include="NullPlaceholderTracker.cs" />
     <Compile Include="PlaceholderTracker.cs" />
+    <Compile Include="RawFileReferenceFinder.cs" />
     <Compile Include="ReferenceBuilder.cs" />
     <Compile Include="CombinedBundles\ScriptAndTemplateBundle.cs" />
     <Compile Include="Scripts\AssignScriptRenderer.cs" />
