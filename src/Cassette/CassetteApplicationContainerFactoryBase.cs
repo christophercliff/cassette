@@ -14,13 +14,22 @@ namespace Cassette
         readonly string virtualDirectory;
         readonly object creationLock = new object();
         IEnumerable<ICassetteConfiguration> cassetteConfigurations;
+        protected readonly IDependencyGraphInteractionFactory _dependencyGraphFactory;
+        private readonly bool _isAspNetDebuggingEnabled;
 
-        protected CassetteApplicationContainerFactoryBase(ICassetteConfigurationFactory cassetteConfigurationFactory, CassetteConfigurationSection configurationSection, string physicalDirectory, string virtualDirectory)
+        protected CassetteApplicationContainerFactoryBase(ICassetteConfigurationFactory cassetteConfigurationFactory,
+                                                          CassetteConfigurationSection configurationSection,
+                                                          string physicalDirectory,
+                                                          string virtualDirectory,
+                                                          IDependencyGraphInteractionFactory dependencyGraphFactory,
+                                                          bool isAspNetDebuggingEnabled)
         {
             this.cassetteConfigurationFactory = cassetteConfigurationFactory;
             this.configurationSection = configurationSection;
             this.physicalDirectory = physicalDirectory;
             this.virtualDirectory = virtualDirectory;
+            _dependencyGraphFactory = dependencyGraphFactory;
+            _isAspNetDebuggingEnabled = isAspNetDebuggingEnabled;
         }
 
         protected abstract bool ShouldWatchFileSystem { get; }
@@ -58,8 +67,17 @@ namespace Cassette
             {
                 var cacheVersion = GetConfigurationVersion();
                 var settings = new CassetteSettings(cacheVersion);
-                var dependencyInteractionFactory = new DependencyGraphInteractionFactory(null);
-                var dependencyInteractor = dependencyInteractionFactory.GetDependencyGraphInteration();
+                settings.IsDebuggingEnabled = _isAspNetDebuggingEnabled;
+                settings.UseOutOfProcessCassette = configurationSection.UseOutOfProcessCassette;
+
+                if(settings.UseOutOfProcessCassette)
+                {
+                    settings.AppDomainAppPath = configurationSection.AppDomainAppPath;
+                    settings.AppDomainAppVirtualPath = configurationSection.AppDomainAppVirtualPath;
+                    settings.AssemblyPath = configurationSection.AssemblyPath;
+                }
+
+                var dependencyInteractor = _dependencyGraphFactory.GetDependencyGraphInteration(settings);
                 var result = dependencyInteractor.CreateBundleContainer(settings, CassetteConfigurations);
 
                 if(result.Exception != null)

@@ -19,7 +19,7 @@ namespace Cassette.DependencyGraphInteration.InterationResults
 
         public StreamInterationResult() { }
 
-        readonly Stream stream;
+        Stream stream;
         public StreamInterationResult(Stream stream, StreamMetaDataResult metaData = null)
         {
             this.stream = stream;
@@ -85,7 +85,15 @@ namespace Cassette.DependencyGraphInteration.InterationResults
 
         protected override void Dispose(bool disposing)
         {
-            stream.Dispose();
+            try
+            {
+                stream.Dispose();
+            }
+            catch (Exception)
+            {
+                stream = null;
+            }
+
             base.Dispose(disposing);
         }
     }

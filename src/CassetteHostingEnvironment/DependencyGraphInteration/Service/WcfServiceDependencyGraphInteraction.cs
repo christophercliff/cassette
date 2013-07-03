@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ServiceModel;
 using Cassette;
 using Cassette.Configuration;
 using Cassette.DependencyGraphInteration;
@@ -9,24 +8,40 @@ using Cassette.HtmlTemplates;
 using Cassette.ScriptAndTemplate;
 using Cassette.Scripts;
 using Cassette.Stylesheets;
+using CassetteHostingEnvironment.DependencyGraphInteration.ServiceInteraction;
+using CassetteHostingEnvironment.DependencyGraphInteration.Settings;
 using CassetteHostingEnvironment.Hosting;
 
 namespace CassetteHostingEnvironment.DependencyGraphInteration.Service
 {
     public class WcfServiceDependencyGraphInteraction : IInteractWithDependencyGraph
     {
-        readonly ICachePerRequestProvider<List<BundleRequest>> provider;
+        readonly ICachePerRequestProvider<List<BundleRequest>> _provider;
+        readonly IInterationServiceUtility _utility;
+        readonly HostedCassetteSettings _settings;
 
-        public WcfServiceDependencyGraphInteraction(ICachePerRequestProvider<List<BundleRequest>> provider)
+        public WcfServiceDependencyGraphInteraction(CassetteSettings settings,
+                                                    ICachePerRequestProvider<List<BundleRequest>> provider,
+                                                    IInterationServiceUtility utility)
         {
-            this.provider = provider;
+            _settings = new HostedCassetteSettings
+            {
+                AppDomainAppPath = settings.AppDomainAppPath,
+                AppDomainAppVirtualPath = settings.AppDomainAppVirtualPath,
+                AssemblyPath = settings.AssemblyPath,
+                IsDebug = settings.IsDebuggingEnabled
+            };
+
+            _provider = provider;
+            _utility = utility;
         }
 
-        public BundleContainerInteractionResult CreateBundleContainer(CassetteSettings settings, IEnumerable<ICassetteConfiguration> configs)
+        public BundleContainerInteractionResult CreateBundleContainer(CassetteSettings settings, 
+                                                                      IEnumerable<ICassetteConfiguration> configs)
         {
-            return PerformInteraction(hostService =>
+            return _utility.PerformInteraction(hostService =>
             {
-                var ret = hostService.AppStart(settings: null);
+                var ret = hostService.AppStart(_settings);
 
                 if(ret.Exception != null)
                 {
@@ -42,9 +57,9 @@ namespace CassetteHostingEnvironment.DependencyGraphInteration.Service
 
         public SimpleInteractionResult ReferenceBundle(string path, string location)
         {
-            return PerformInteraction(hostService =>
+            return _utility.PerformInteraction(hostService =>
             {
-                var bundlesForThisRequest = provider.GetCachedValue() ??  new List<BundleRequest>();
+                var bundlesForThisRequest = _provider.GetCachedValue() ??  new List<BundleRequest>();
 
                 bundlesForThisRequest.Add(new BundleRequest
                 {
@@ -52,7 +67,7 @@ namespace CassetteHostingEnvironment.DependencyGraphInteration.Service
                     Location = location
                 });
 
-                provider.SetCachedValue(bundlesForThisRequest);
+                _provider.SetCachedValue(bundlesForThisRequest);
 
                 return new SimpleInteractionResult();
             });
@@ -69,18 +84,18 @@ namespace CassetteHostingEnvironment.DependencyGraphInteration.Service
 
         public StringInterationResult Render<T>(string location) where T : Bundle
         {
-            return PerformInteraction(hostService =>
+            return _utility.PerformInteraction(hostService =>
             {
                 var type = typeof(T);
                 var bundleType = TypeToBundleType[type];
-                var bundles = provider.GetCachedValue();
+                var bundles = _provider.GetCachedValue();
                 return hostService.Render(bundles, bundleType, location);
             });
         }
 
         public StreamInterationResult GetAsset(string path)
         {
-            return PerformInteraction(hostService =>
+            return _utility.PerformInteraction(hostService =>
             {
                 var metaData = GetMetaData(() => hostService.GetAssetMetaData(path));
                 var stream = hostService.GetAsset(path);
@@ -91,7 +106,7 @@ namespace CassetteHostingEnvironment.DependencyGraphInteration.Service
         public StreamInterationResult GetBundle<T>(string path)
             where T: Bundle
         {
-            return PerformInteraction(hostService =>
+            return _utility.PerformInteraction(hostService =>
             {
                 var type = typeof(T);
                 var bundleType = TypeToBundleType[type];
@@ -112,27 +127,6 @@ namespace CassetteHostingEnvironment.DependencyGraphInteration.Service
             }
 
             return metaData;
-        }
-
-        private T PerformInteraction<T>(Func<ICassetteHost, T> action)
-            where T : IInterationResult, new()
-        {
-            try
-            {
-                using(var pipeFactory = new ChannelFactory<ICassetteHost>(new NetNamedPipeBinding { TransferMode = TransferMode.Streamed},
-                                                                          new EndpointAddress("net.pipe://localhost/HostingService")))
-                {
-                    var proxy = pipeFactory.CreateChannel();
-                    return action(proxy);
-                }
-            }
-            catch (Exception exception)
-            {
-                return new T
-                {
-                    Exception = exception
-                };
-            }
         }
     }
 }

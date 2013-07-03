@@ -9,6 +9,11 @@ namespace Cassette.Configuration
         readonly string sourceDirectory;
         readonly string virtualDirectory;
 
+        public InitialConfiguration()
+        {
+            
+        }
+
         public InitialConfiguration(CassetteConfigurationSection configurationSection, bool isAspNetDebuggingEnabled, string sourceDirectory, string virtualDirectory)
         {
             this.configurationSection = configurationSection;
@@ -19,6 +24,11 @@ namespace Cassette.Configuration
 
         public void Configure(BundleCollection bundles, CassetteSettings settings)
         {
+            if (configurationSection == null)
+            {
+                return;
+            }
+
             settings.IsDebuggingEnabled = configurationSection.Debug.HasValue ? configurationSection.Debug.Value : isAspNetDebuggingEnabled;
             settings.IsHtmlRewritingEnabled = configurationSection.RewriteHtml;
             settings.AllowRemoteDiagnostics = configurationSection.AllowRemoteDiagnostics;

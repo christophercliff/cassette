@@ -1,8 +1,8 @@
 ﻿using System;
 using System.ServiceModel;
 using System.ServiceProcess;
+using System.Xml;
 using CassetteHostingEnvironment.DependencyGraphInteration.Service;
-using CassetteHostingEnvironment.DependencyGraphInteration.Settings;
 using CassetteHostingEnvironment.Hosting;
 
 namespace CassetteHostingEnvironment
@@ -36,15 +36,13 @@ namespace CassetteHostingEnvironment
                 ServiceHost.Close();
             }
 
-            ServiceHost = new ServiceHost(typeof(CassetteHost), new Uri("net.pipe://localhost"));
+            var util = new InterationServiceUtility();
+
+            ServiceHost = new ServiceHost(typeof(CassetteHost), new Uri(util.GetServiceUri()));
 
             ServiceHost.AddServiceEndpoint(typeof(ICassetteHost),
-                new NetNamedPipeBinding
-                {
-                    TransferMode = TransferMode.Streamed,
-                    MaxReceivedMessageSize = 256000
-                },
-                "HostingService");
+                util.GetBinding(),
+                util.GetServiceName());
 
             ServiceHost.Open();
         }

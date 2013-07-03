@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Web;
 using Cassette.Configuration;
+using Cassette.DependencyGraphInteration;
 
 namespace Cassette.Web
 {
     class CassetteApplication : CassetteApplicationBase
     {
-        public CassetteApplication(IBundleContainer bundleContainer, CassetteSettings settings, Func<HttpContextBase> getCurrentHttpContext)
-            : base(bundleContainer, settings)
+        public CassetteApplication(IBundleContainer bundleContainer,
+                                          CassetteSettings settings,
+                                          Func<HttpContextBase> getCurrentHttpContext,
+                                          IDependencyGraphInteractionFactory dependencyGraphFactory)
+            : base(bundleContainer, settings, dependencyGraphFactory)
         {
             this.getCurrentHttpContext = getCurrentHttpContext;
         }

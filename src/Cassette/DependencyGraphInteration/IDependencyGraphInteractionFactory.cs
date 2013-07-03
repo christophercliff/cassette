@@ -1,7 +1,9 @@
-﻿namespace Cassette.DependencyGraphInteration
+﻿using Cassette.Configuration;
+
+namespace Cassette.DependencyGraphInteration
 {
-    interface IDependencyGraphInteractionFactory
+    public interface IDependencyGraphInteractionFactory
     {
-        IInteractWithDependencyGraph GetDependencyGraphInteration();
+        IInteractWithDependencyGraph GetDependencyGraphInteration(CassetteSettings settings);
     }
 }

@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using Cassette;
 using Cassette.Configuration;
+using Cassette.DependencyGraphInteration;
 
 namespace CassetteHostingEnvironment.DependencyGraphInteration.Service
 {
@@ -15,14 +16,13 @@ namespace CassetteHostingEnvironment.DependencyGraphInteration.Service
         readonly string virtualDirectory;
         readonly bool isAspNetDebuggingEnabled;
 
-        public CassetteServiceContainerFactory(
-            ICassetteConfigurationFactory cassetteConfigurationFactory,
-            CassetteConfigurationSection configurationSection,
-            string physicalDirectory,
-            string virtualDirectory,
-            bool isAspNetDebuggingEnabled
-            )
-            : base(cassetteConfigurationFactory, configurationSection, physicalDirectory, virtualDirectory)
+        public CassetteServiceContainerFactory(ICassetteConfigurationFactory cassetteConfigurationFactory,
+                                               CassetteConfigurationSection configurationSection,
+                                               string physicalDirectory,
+                                               string virtualDirectory,
+                                               bool isAspNetDebuggingEnabled,
+                                               IDependencyGraphInteractionFactory dependencyGraphFactory)
+            : base(cassetteConfigurationFactory, configurationSection, physicalDirectory, virtualDirectory, dependencyGraphFactory, isAspNetDebuggingEnabled)
         {
             this.configurationSection = configurationSection;
             this.physicalDirectory = physicalDirectory;
@@ -75,7 +75,7 @@ namespace CassetteHostingEnvironment.DependencyGraphInteration.Service
 
         protected override CassetteServiceApplication CreateCassetteApplicationCore(IBundleContainer bundleContainer, CassetteSettings settings)
         {
-            return new CassetteServiceApplication(bundleContainer, settings);
+            return new CassetteServiceApplication(bundleContainer, settings, _dependencyGraphFactory);
         }
 
         protected override bool ShouldWatchFileSystem

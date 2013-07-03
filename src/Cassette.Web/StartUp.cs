@@ -8,6 +8,7 @@ using System.Web.Compilation;
 using System.Web.Configuration;
 using System.Web.Routing;
 using Cassette.Configuration;
+using Cassette.DependencyGraphInteration;
 
 namespace Cassette.Web
 {
@@ -48,7 +49,8 @@ namespace Cassette.Web
             var factory = CreateApplicationContainerFactory();
             _container = factory.CreateContainer();
             CassetteApplicationContainer.SetApplicationAccessor(() => _container.Application);
-            var forceCreation = _container.Application;
+            var forceCreate = _container.Application;
+            _container.Application.SetDependencyInteractionFactory(new DependencyGraphInteractionFactory(_container.Application));
         }
 
         static CassetteApplicationContainerFactory CreateApplicationContainerFactory()
@@ -59,7 +61,8 @@ namespace Cassette.Web
                 HttpRuntime.AppDomainAppPath,
                 HttpRuntime.AppDomainAppVirtualPath,
                 IsAspNetDebugging,
-                GetCurrentHttpContext
+                GetCurrentHttpContext,
+                new DependencyGraphInteractionFactory(null) //TODO
             );
         }
 

@@ -91,7 +91,6 @@
     <Compile Include="Configuration\InitialConfiguration.cs" />
     <Compile Include="Configuration\IsolatedStorageContainer.cs" />
     <Compile Include="ConstantHtmlRenderer.cs" />
-    <Compile Include="DependencyGraphInteration\DependencyGraphInteractionFactory.cs" />
     <Compile Include="DependencyGraphInteration\IDependencyGraphInteractionFactory.cs" />
     <Compile Include="DependencyGraphInteration\IInteractWithDependencyGraph.cs" />
     <Compile Include="DependencyGraphInteration\InMemory\InMemoryDependencyGraphInteraction.cs" />

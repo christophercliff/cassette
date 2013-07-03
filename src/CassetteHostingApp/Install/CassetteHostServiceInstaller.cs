@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel;
 using System.Configuration.Install;
 using System.ServiceProcess;
+using CassetteHostingEnvironment;
 
-namespace CassetteHostingEnvironment.Install
+namespace CassetteHostingApp.Install
 {
     [RunInstaller(true)]
     public class CassetteHostServiceInstaller : Installer

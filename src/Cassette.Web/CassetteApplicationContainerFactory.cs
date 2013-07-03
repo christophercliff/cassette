@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Web;
 using Cassette.Configuration;
+using Cassette.DependencyGraphInteration;
 
 namespace Cassette.Web
 {
@@ -17,15 +18,14 @@ namespace Cassette.Web
         readonly bool isAspNetDebuggingEnabled;
         readonly Func<HttpContextBase> getHttpContext;
 
-        public CassetteApplicationContainerFactory(
-            ICassetteConfigurationFactory cassetteConfigurationFactory,
-            CassetteConfigurationSection configurationSection,
-            string physicalDirectory,
-            string virtualDirectory,
-            bool isAspNetDebuggingEnabled,
-            Func<HttpContextBase> getHttpContext
-            )
-            : base(cassetteConfigurationFactory, configurationSection, physicalDirectory, virtualDirectory)
+        public CassetteApplicationContainerFactory(ICassetteConfigurationFactory cassetteConfigurationFactory,
+                                                   CassetteConfigurationSection configurationSection,
+                                                   string physicalDirectory,
+                                                   string virtualDirectory,
+                                                   bool isAspNetDebuggingEnabled,
+                                                   Func<HttpContextBase> getHttpContext,
+                                                   IDependencyGraphInteractionFactory dependencyGraphFactory)
+            : base(cassetteConfigurationFactory, configurationSection, physicalDirectory, virtualDirectory, dependencyGraphFactory, isAspNetDebuggingEnabled)
         {
             this.configurationSection = configurationSection;
             this.physicalDirectory = physicalDirectory;
@@ -82,7 +82,8 @@ namespace Cassette.Web
             return new CassetteApplication(
                 bundleContainer,
                 settings,
-                getHttpContext
+                getHttpContext,
+                new DependencyGraphInteractionFactory(null) //TODO
             );
         }
 

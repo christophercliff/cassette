@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cassette.Configuration;
+using Cassette.DependencyGraphInteration;
 using Cassette.HtmlTemplates;
 using Cassette.IO;
 using Cassette.Scripts;
@@ -297,7 +298,7 @@ namespace Cassette.Views
                     SourceDirectory = Mock.Of<IDirectory>(),
                     IsDebuggingEnabled = true,
                     UrlGenerator = urlGenerator
-                })
+                }, new DependencyGraphInteractionFactory(null))
             {
                 this.referenceBuilder = referenceBuilder;
                 this.bundleContainer = bundleContainer;

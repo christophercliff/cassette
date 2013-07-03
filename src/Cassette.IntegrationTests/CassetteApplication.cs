@@ -5,6 +5,7 @@ using System.IO;
 using System.Web;
 using System.Web.Routing;
 using Cassette.Configuration;
+using Cassette.DependencyGraphInteration;
 using Cassette.HtmlTemplates;
 using Cassette.IO;
 using Cassette.Scripts;
@@ -214,7 +215,8 @@ document.write(unescape('%3Cscript src=""/_cassette/scriptbundle/scripts/bundle-
             var application = new CassetteApplication(
                 bundleContainer,
                 settings,
-                () => httpContext.Object
+                () => httpContext.Object,
+                new DependencyGraphInteractionFactory(null)
             );
             container.Setup(c => c.Application).Returns(() => application);
             new RouteInstaller(container.Object, "_cassette").InstallRoutes(routes);

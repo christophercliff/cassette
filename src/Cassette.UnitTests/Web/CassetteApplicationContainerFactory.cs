@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using Cassette.Configuration;
+using Cassette.DependencyGraphInteration;
 using Cassette.Manifests;
 using Cassette.Scripts;
 using Cassette.Stylesheets;
@@ -37,7 +38,8 @@ namespace Cassette.Web
                     path,
                     "/",
                     false,
-                    Mock.Of<HttpContextBase>
+                    Mock.Of<HttpContextBase>,
+                    new DependencyGraphInteractionFactory(null)
                 );
 
                 var container = factory.CreateContainer();
@@ -205,7 +207,8 @@ namespace Cassette.Web
                 path,
                 "/",
                 false,
-                Mock.Of<HttpContextBase>
+                Mock.Of<HttpContextBase>,
+                new DependencyGraphInteractionFactory(null)
             );
         }
     }

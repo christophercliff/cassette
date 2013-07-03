@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.ServiceModel;
 using Cassette;
 using Cassette.Configuration;
 using Cassette.DependencyGraphInteration.InterationResults;
@@ -14,6 +15,8 @@ using CassetteHostingEnvironment.DependencyGraphInteration.Settings;
 
 namespace CassetteHostingEnvironment.Hosting
 {
+    [ServiceBehaviorAttribute(InstanceContextMode = InstanceContextMode.PerCall,
+                              ConcurrencyMode = ConcurrencyMode.Multiple)]
     public class CassetteHost : ICassetteHost
     {
         private static CassetteApplicationContainer<CassetteServiceApplication> _container;
@@ -33,12 +36,14 @@ namespace CassetteHostingEnvironment.Hosting
                     },
                     settings.AppDomainAppPath,
                     settings.AppDomainAppVirtualPath,
-                    settings.IsDebug
+                    settings.IsDebug,
+                    new HostedDependencyGraphInteractionFactory(null)
                     );
 
                 _container = factory.CreateContainer();
                 CassetteApplicationContainer.SetApplicationAccessor(() => _container.Application);
-                var forceCreation = _container.Application;
+                var lazyEvalulatedApp = _container.Application;
+                _container.Application.SetDependencyInteractionFactory(new HostedDependencyGraphInteractionFactory(lazyEvalulatedApp));
                 return new SimpleInteractionResult();
             });
         }

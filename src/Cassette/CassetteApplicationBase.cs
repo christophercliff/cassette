@@ -8,29 +8,33 @@ namespace Cassette
 {
     public abstract class CassetteApplicationBase : ICassetteApplication
     {
-        protected CassetteApplicationBase(IBundleContainer bundleContainer, CassetteSettings settings)
-        {
-            this.settings = settings;
-            this.bundleContainer = bundleContainer;
-        }
+        readonly CassetteSettings _settings;
+        readonly IBundleContainer _bundleContainer;
+        IDependencyGraphInteractionFactory _factory;
 
-        readonly CassetteSettings settings;
-        readonly IBundleContainer bundleContainer;
+        protected CassetteApplicationBase(IBundleContainer bundleContainer,
+                                          CassetteSettings settings,
+                                          IDependencyGraphInteractionFactory factory)
+        {
+            _settings = settings;
+            _bundleContainer = bundleContainer;
+            _factory = factory;
+        }
 
         public CassetteSettings Settings
         {
-            get { return settings; }
+            get { return _settings; }
         }
 
         public IEnumerable<Bundle> Bundles
         {
-            get { return bundleContainer.Bundles; }
+            get { return _bundleContainer.Bundles; }
         }
 
         public virtual T FindBundleContainingPath<T>(string path)
             where T : Bundle
         {
-            return bundleContainer.FindBundlesContainingPath(path).OfType<T>().FirstOrDefault();
+            return _bundleContainer.FindBundlesContainingPath(path).OfType<T>().FirstOrDefault();
         }
 
         public IReferenceBuilder GetReferenceBuilder()
@@ -40,7 +44,7 @@ namespace Cassette
 
         public IInteractWithDependencyGraph GetInteration()
         {
-            return new DependencyGraphInteractionFactory(this).GetDependencyGraphInteration();
+            return _factory.GetDependencyGraphInteration(_settings);
         }
 
         protected abstract IReferenceBuilder GetOrCreateReferenceBuilder(Func<IReferenceBuilder> create);
@@ -48,29 +52,29 @@ namespace Cassette
 
         public void Dispose()
         {
-            bundleContainer.Dispose();
+            _bundleContainer.Dispose();
         }
 
         protected IReferenceBuilder CreateReferenceBuilder()
         {
             return new ReferenceBuilder(
-                bundleContainer,
-                settings.BundleFactories,
+                _bundleContainer,
+                _settings.BundleFactories,
                 GetPlaceholderTracker(),
-                settings
+                _settings
             );
         }
 
         protected IPlaceholderTracker CreatePlaceholderTracker()
         {
-            if (Settings.IsHtmlRewritingEnabled)
-            {
-                return new PlaceholderTracker();
-            }
-            else
-            {
-                return new NullPlaceholderTracker();
-            }
+            return Settings.IsHtmlRewritingEnabled
+                       ? (IPlaceholderTracker)new PlaceholderTracker()
+                       : new NullPlaceholderTracker();
+        }
+
+        public void SetDependencyInteractionFactory(IDependencyGraphInteractionFactory factory)
+        {
+            _factory = factory;
         }
     }
 }
