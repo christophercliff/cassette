@@ -25,7 +25,10 @@ namespace CassetteHostingEnvironment.Hosting
         {
             return PerformInteraction(() =>
             {
-                var assembly = Assembly.LoadFile(settings.AssemblyPath);
+                var newAssemblyLocation = DiskBackedBundleCache.CacheDirectory + Guid.NewGuid().ToString();
+                File.Copy(settings.AssemblyPath, newAssemblyLocation);
+
+                var assembly = Assembly.LoadFile(newAssemblyLocation);
 
                 var factory = new CassetteServiceContainerFactory(
                     new AssemblyScanningCassetteConfigurationFactory(new[] { assembly }),
