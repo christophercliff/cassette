@@ -3,6 +3,8 @@ using System.IO;
 using System.IO.Compression;
 using System.Web;
 using System.Web.Routing;
+using Cassette.DependencyGraphInteration;
+using Cassette.DependencyGraphInteration.InterationResults;
 using Cassette.Utilities;
 
 namespace Cassette.Web
@@ -15,8 +17,9 @@ namespace Cassette.Web
         readonly HttpResponseBase response;
         readonly HttpRequestBase request;
         readonly HttpContextBase httpContext;
+        readonly IInteractWithDependencyGraph interaction;
 
-        public BundleRequestHandler(ICassetteApplication application, RequestContext requestContext)
+        public BundleRequestHandler(ICassetteApplication application, RequestContext requestContext, IInteractWithDependencyGraph interaction)
         {
             this.application = application;
             
@@ -24,20 +27,27 @@ namespace Cassette.Web
             response = requestContext.HttpContext.Response;
             request = requestContext.HttpContext.Request;
             httpContext = requestContext.HttpContext;
+            this.interaction = interaction;
         }
 
         public void ProcessRequest()
         {
             httpContext.DisableHtmlRewriting();
-            var bundle = FindBundle();
-            if (bundle == null)
+            var result = FindBundle();
+
+            if (result.Exception != null)
+            {
+                throw result.Exception;
+            }
+
+            if (result.NotFound)
             {
                 Trace.Source.TraceInformation("Bundle not found \"{0}\".", Path.Combine("~", routeData.GetRequiredString("path")));
                 response.StatusCode = 404;
             }
             else
             {
-                var actualETag = "\"" + bundle.Hash.ToHexString() + "\"";
+                var actualETag = "\"" + result.Hash + "\"";
                 var givenETag = request.Headers["If-None-Match"];
                 if (givenETag == actualETag)
                 {
@@ -45,7 +55,7 @@ namespace Cassette.Web
                 }
                 else
                 {
-                    SendBundle(bundle, actualETag);
+                    SendBundle(result, actualETag);
                 }
             }
         }
@@ -61,12 +71,12 @@ namespace Cassette.Web
             ProcessRequest();
         }
 
-        Bundle FindBundle()
+        StreamInterationResult FindBundle()
         {
             var path = "~/" + routeData.GetRequiredString("path");
             Trace.Source.TraceInformation("Handling bundle request for \"{0}\".", path);
             path = RemoveTrailingHashFromPath(path);
-            return application.FindBundleContainingPath<T>(path);
+            return interaction.GetBundle<T>(path);
         }
 
         /// <summary>
@@ -89,17 +99,17 @@ namespace Cassette.Web
             response.SuppressContent = true;
         }
 
-        void SendBundle(Bundle bundle, string actualETag)
+        void SendBundle(StreamInterationResult stream, string actualETag)
         {
-            response.ContentType = bundle.ContentType;
+            response.ContentType = stream.ContentType;
             CacheLongTime(actualETag);
 
             var encoding = request.Headers["Accept-Encoding"];
             response.Filter = EncodeStreamAndAppendResponseHeaders(response.Filter, encoding);
-            
-            using (var assetStream = bundle.OpenStream())
+
+            using (stream)
             {
-                assetStream.CopyTo(response.OutputStream);
+                stream.CopyTo(response.OutputStream);
             }
         }
 

@@ -38,5 +38,34 @@ namespace Cassette.Configuration
             get { return (string)this["precompiledManifest"]; }
             set { this["precompiledManifest"] = value; }
         }
+
+        [ConfigurationProperty("UseOutOfProcessCassette", DefaultValue = false)]
+        public bool UseOutOfProcessCassette
+        {
+            get { return (this["UseOutOfProcessCassette"] as bool?) ?? false; }
+            set { this["UseOutOfProcessCassette"] = value; }
+        }
+
+        [ConfigurationProperty("AppDomainAppPath", DefaultValue = null)]
+        public string AppDomainAppPath
+        {
+            get { return (string)this["AppDomainAppPath"]; }
+            set { this["AppDomainAppPath"] = value; }
+        }
+
+        [ConfigurationProperty("AppDomainAppVirtualPath", DefaultValue = null)]
+        public string AppDomainAppVirtualPath
+        {
+            get { return (string)this["AppDomainAppVirtualPath"]; }
+            set { this["AppDomainAppVirtualPath"] = value; }
+        }
+
+        [ConfigurationProperty("AssemblyPath", DefaultValue = null)]
+        public string AssemblyPath
+        {
+            get { return (string)this["AssemblyPath"]; }
+            set { this["AssemblyPath"] = value; }
+        }
+
     }
 }

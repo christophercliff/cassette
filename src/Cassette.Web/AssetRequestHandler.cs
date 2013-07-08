@@ -1,20 +1,20 @@
-﻿using System.Collections.Generic;
-using System.Web;
+﻿using System.Web;
 using System.Web.Routing;
-using Cassette.Utilities;
+using Cassette.DependencyGraphInteration;
+using Cassette.DependencyGraphInteration.InterationResults;
 
 namespace Cassette.Web
 {
     class AssetRequestHandler : IHttpHandler
     {
-        public AssetRequestHandler(RequestContext requestContext, IEnumerable<Bundle> bundles)
+        public AssetRequestHandler(RequestContext requestContext, IInteractWithDependencyGraph interaction)
         {
+            this.interaction = interaction;
             this.requestContext = requestContext;
-            this.bundles = bundles;
         }
 
+        readonly IInteractWithDependencyGraph interaction;
         readonly RequestContext requestContext;
-        readonly IEnumerable<Bundle> bundles;
 
         public bool IsReusable
         {
@@ -27,9 +27,15 @@ namespace Cassette.Web
             Trace.Source.TraceInformation("Handling asset request for path \"{0}\".", path);
             requestContext.HttpContext.DisableHtmlRewriting();
             var response = requestContext.HttpContext.Response;
-            IAsset asset;
-            Bundle bundle;
-            if (!bundles.TryGetAssetByPath(path, out asset, out bundle))
+
+            var result = interaction.GetAsset(path);
+
+            if(result.Exception != null)
+            {
+                throw result.Exception;
+            }
+
+            if (result.NotFound)
             {
                 Trace.Source.TraceInformation("Bundle asset not found with path \"{0}\".", path);
                 NotFound(response);
@@ -37,14 +43,14 @@ namespace Cassette.Web
             }
 
             var request = requestContext.HttpContext.Request;
-            SendAsset(request, response, bundle, asset);
+            SendAsset(request, response, result);
         }
 
-        void SendAsset(HttpRequestBase request, HttpResponseBase response, Bundle bundle, IAsset asset)
+        void SendAsset(HttpRequestBase request, HttpResponseBase response, StreamInterationResult stream)
         {
-            response.ContentType = bundle.ContentType;
+            response.ContentType = stream.ContentType;
 
-            var actualETag = "\"" + asset.Hash.ToHexString() + "\"";
+            var actualETag = "\"" + stream.Hash + "\"";
             response.Cache.SetCacheability(HttpCacheability.Public);
             response.Cache.SetETag(actualETag);
 
@@ -55,7 +61,7 @@ namespace Cassette.Web
             }
             else
             {
-                using (var stream = asset.OpenStream())
+                using (stream)
                 {
                     stream.CopyTo(response.OutputStream); 
                 }

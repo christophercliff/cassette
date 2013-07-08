@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Cassette.Configuration
 {
-    interface ICassetteConfigurationFactory
+    public interface ICassetteConfigurationFactory
     {
         IEnumerable<ICassetteConfiguration> CreateCassetteConfigurations();
     }

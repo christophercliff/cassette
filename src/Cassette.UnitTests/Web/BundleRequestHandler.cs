@@ -53,7 +53,8 @@ namespace Cassette.Web
             routeData.Values.Add("path", bundlePath);
             return new BundleRequestHandler<TestableBundle>(
                 application.Object,
-                requestContext
+                requestContext,
+                null
             );
         }
 

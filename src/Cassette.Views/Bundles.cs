@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cassette.DependencyGraphInteration;
 using Cassette.HtmlTemplates;
 using Cassette.Scripts;
 using Cassette.Stylesheets;
@@ -34,7 +35,7 @@ namespace Cassette.Views
         /// <param name="pageLocation">The optional page location of the referenced bundle. This controls where it will be rendered.</param>
         public static void Reference(string assetPathOrBundlePathOrUrl, string pageLocation)
         {
-            ReferenceBuilder.Reference(assetPathOrBundlePathOrUrl, pageLocation);
+            ExternalGraphInteraction.ReferenceBundle(assetPathOrBundlePathOrUrl, pageLocation);
         }
 
         /// <summary>
@@ -335,15 +336,22 @@ namespace Cassette.Views
 
         static IHtmlString Render<T>(string location) where T : Bundle
         {
-            return new HtmlString(ReferenceBuilder.Render<T>(location));
+            var result = ExternalGraphInteraction.Render<T>(location);
+            if(result.Exception != null)
+            {
+                throw result.Exception;
+            }
+            return new HtmlString(result.ResourceString);
         }
 
         static IReferenceBuilder ReferenceBuilder
         {
-            get
-            {
-                return Application.GetReferenceBuilder();
-            }
+            get { return Application.GetReferenceBuilder(); }
+        }
+
+        static IInteractWithDependencyGraph ExternalGraphInteraction
+        {
+            get { return Application.GetInteration(); }
         }
 
         static ICassetteApplication Application

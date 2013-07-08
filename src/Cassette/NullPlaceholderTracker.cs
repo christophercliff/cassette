@@ -5,7 +5,7 @@ namespace Cassette
     /// <summary>
     /// A do-nothing implementation of <see cref="IPlaceholderTracker"/>.
     /// </summary>
-    class NullPlaceholderTracker : IPlaceholderTracker
+    public class NullPlaceholderTracker : IPlaceholderTracker
     {
         public string InsertPlaceholder(Func<string> futureHtml)
         {

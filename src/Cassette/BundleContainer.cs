@@ -8,7 +8,7 @@ using Iesi.Collections.Generic;
 
 namespace Cassette
 {
-    class BundleContainer : IBundleContainer
+    public class BundleContainer : IBundleContainer
     {
         public BundleContainer(IEnumerable<Bundle> bundles)
         {

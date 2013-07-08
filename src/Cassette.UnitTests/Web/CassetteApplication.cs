@@ -4,6 +4,7 @@ using System.IO;
 using System.Web;
 using System.Web.Handlers;
 using Cassette.Configuration;
+using Cassette.DependencyGraphInteration;
 using Cassette.IO;
 using Moq;
 using Should;
@@ -79,8 +80,9 @@ namespace Cassette.Web
 
             return new CassetteApplication(
                 new BundleContainer(bundles), 
-                settings, 
-                () => httpContext.Object
+                settings,
+                () => httpContext.Object,
+                new DependencyGraphInteractionFactory(null)
             );
         }
 

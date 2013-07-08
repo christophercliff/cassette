@@ -45,7 +45,7 @@ namespace Cassette.Web
         {
             var url = GetBundleRouteUrl<T>();
             var handler = new DelegateRouteHandler(
-                requestContext => new BundleRequestHandler<T>(container.Application, requestContext)
+                requestContext => new BundleRequestHandler<T>(container.Application, requestContext, container.Application.GetInteration())
             );
             Trace.Source.TraceInformation("Installing {0} route handler for \"{1}\".", typeof(T).FullName, url);
             InsertRouteIntoTable(url, handler);
@@ -80,7 +80,7 @@ namespace Cassette.Web
             var handler = new DelegateRouteHandler(
                 requestContext => new AssetRequestHandler(
                     requestContext,
-                    container.Application.Bundles
+                    container.Application.GetInteration()
                 )
             );
             Trace.Source.TraceInformation("Installing asset route handler for \"{0}\".", url);
@@ -91,7 +91,7 @@ namespace Cassette.Web
         {
             var url = routePrefix + "/file/{*path}";
             var handler = new DelegateRouteHandler(
-                requestContext => new RawFileRequestHandler(requestContext, container.Application.Bundles)
+                requestContext => new RawFileRequestHandler(requestContext, container.Application.Bundles, container.Application.GetInteration())
             );
             Trace.Source.TraceInformation("Installing raw file route handler for \"{0}\".", url);
             InsertRouteIntoTable(url, handler);

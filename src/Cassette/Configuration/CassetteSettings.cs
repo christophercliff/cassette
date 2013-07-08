@@ -74,6 +74,11 @@ namespace Cassette.Configuration
         /// </summary>
         public IUrlModifier UrlModifier { get; set; }
 
+        public bool UseOutOfProcessCassette { get; set; }
+        public string AppDomainAppPath { get; set; }
+        public string AppDomainAppVirtualPath { get; set; }
+        public string AssemblyPath { get; set; }
+
         /// <summary>
         /// The default <see cref="IFileSearch"/> object for each type of <see cref="Bundle"/>, used to find asset files to include.
         /// </summary>
@@ -152,7 +157,7 @@ namespace Cassette.Configuration
             get { return cassetteManifestCache.Value; }
         }
 
-        internal IBundleContainerFactory GetBundleContainerFactory(IEnumerable<ICassetteConfiguration> cassetteConfigurations)
+        public IBundleContainerFactory GetBundleContainerFactory(IEnumerable<ICassetteConfiguration> cassetteConfigurations)
         {
             var bundles = ExecuteCassetteConfiguration(cassetteConfigurations);
             if (IsDebuggingEnabled)
