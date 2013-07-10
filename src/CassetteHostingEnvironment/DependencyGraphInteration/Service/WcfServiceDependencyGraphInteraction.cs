@@ -29,7 +29,8 @@ namespace CassetteHostingEnvironment.DependencyGraphInteration.Service
                 AppDomainAppPath = settings.AppDomainAppPath,
                 AppDomainAppVirtualPath = settings.AppDomainAppVirtualPath,
                 AssemblyPath = settings.AssemblyPath,
-                IsDebug = settings.IsDebuggingEnabled
+                IsDebug = settings.IsDebuggingEnabled,
+                ConfigurationFileLocation = settings.ConfigurationFileLocation
             };
 
             _provider = provider;

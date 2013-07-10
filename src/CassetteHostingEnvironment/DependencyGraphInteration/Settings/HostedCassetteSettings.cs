@@ -6,5 +6,6 @@
         public string AssemblyPath { get; set; }
         public string AppDomainAppPath { get; set; }
         public string AppDomainAppVirtualPath { get; set; }
+        public string ConfigurationFileLocation { get; set; }
     }
 }

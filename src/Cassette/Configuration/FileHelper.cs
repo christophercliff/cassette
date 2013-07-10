@@ -64,7 +64,17 @@ namespace Cassette.Configuration
                 lock (locker)
                 {
                     new DirectoryInfo(cacheDirectory).GetFiles("*", SearchOption.AllDirectories)
-                        .ToList().ForEach(f => f.Delete());
+                        .ToList().ForEach(f =>
+                        {
+                            try
+                            {
+                                f.Delete();
+                            }
+                            catch(Exception e)
+                            {
+                                //do nothing.  Its a dll in use by the hosting app.
+                            }
+                        });
                     File.Create(cacheDirectory + cacheVersion);
                 }
             }

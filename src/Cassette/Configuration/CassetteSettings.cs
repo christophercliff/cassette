@@ -78,7 +78,7 @@ namespace Cassette.Configuration
         public string AppDomainAppPath { get; set; }
         public string AppDomainAppVirtualPath { get; set; }
         public string AssemblyPath { get; set; }
-
+        public string ConfigurationFileLocation { get; set; }
         /// <summary>
         /// The default <see cref="IFileSearch"/> object for each type of <see cref="Bundle"/>, used to find asset files to include.
         /// </summary>
