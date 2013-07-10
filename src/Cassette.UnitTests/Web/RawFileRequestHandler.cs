@@ -35,7 +35,7 @@ namespace Cassette.Web
                 var content = new byte[] { 1, 2, 3 };
                 File.WriteAllBytes(filename, content);
 
-                http.MapRoute("{*path}", c => new RawFileRequestHandler(c, bundles));
+                http.MapRoute("{*path}", c => new RawFileRequestHandler(c, bundles, null));
                 http.Server.Setup(s => s.MapPath("~/test.png")).Returns(filename);
 
 
@@ -61,7 +61,7 @@ namespace Cassette.Web
                 var content = new byte[] { 1, 2, 3 };
                 File.WriteAllBytes(filename, content);
 
-                http.MapRoute("{*path}", c => new RawFileRequestHandler(c, bundles));
+                http.MapRoute("{*path}", c => new RawFileRequestHandler(c, bundles, null));
                 http.Server.Setup(s => s.MapPath("~/test.png")).Returns(filename);
 
                 string eTag;
@@ -87,7 +87,7 @@ namespace Cassette.Web
                 var content = new byte[] { 1, 2, 3 };
                 File.WriteAllBytes(filename, content);
 
-                http.MapRoute("{*path}", c => new RawFileRequestHandler(c, bundles));
+                http.MapRoute("{*path}", c => new RawFileRequestHandler(c, bundles, null));
                 http.Server.Setup(s => s.MapPath("~/test.png")).Returns(filename);
 
                 http.Get("~/test_hash.png");
@@ -106,7 +106,7 @@ namespace Cassette.Web
                 var content = new byte[] { 1, 2, 3 };
                 File.WriteAllBytes(filename, content);
 
-                http.MapRoute("{*path}", c => new RawFileRequestHandler(c, bundles));
+                http.MapRoute("{*path}", c => new RawFileRequestHandler(c, bundles, null));
                 http.Server.Setup(s => s.MapPath("~/protected.png")).Returns(filename);
 
                 http.Get("~/protected_hash.png");

@@ -76,13 +76,36 @@
     </Compile>
     <Compile Include="BundleProcessing\AssignHash.cs" />
     <Compile Include="BundleReferenceCollector.cs" />
+    <Compile Include="CombinedBundles\CombinedScriptBundle.cs" />
+    <Compile Include="CombinedBundles\CombinedStyleSheetBundle.cs" />
+    <Compile Include="CombinedBundles\CombinedBundleUtility.cs" />
     <Compile Include="ConditionalRenderer.cs" />
+    <Compile Include="Configuration\AssignUrlGenerator.cs" />
+    <Compile Include="Configuration\DiskBackedBundleCache.cs" />
     <Compile Include="Configuration\CompileTimeManifestBundleContainerFactory.cs" />
+    <Compile Include="Configuration\FileHelper.cs" />
     <Compile Include="Configuration\ExternalBundleGenerator.cs" />
     <Compile Include="Configuration\FilePathComparer.cs" />
     <Compile Include="Configuration\ICassetteConfigurationFactory.cs" />
+    <Compile Include="Configuration\IFileHelper.cs" />
+    <Compile Include="Configuration\InitialConfiguration.cs" />
+    <Compile Include="Configuration\IsolatedStorageContainer.cs" />
     <Compile Include="ConstantHtmlRenderer.cs" />
+    <Compile Include="DependencyGraphInteration\IDependencyGraphInteractionFactory.cs" />
+    <Compile Include="DependencyGraphInteration\IInteractWithDependencyGraph.cs" />
+    <Compile Include="DependencyGraphInteration\InMemory\InMemoryDependencyGraphInteraction.cs" />
+    <Compile Include="DependencyGraphInteration\InterationResults\BundleContainerInteractionResult.cs" />
+    <Compile Include="DependencyGraphInteration\InterationResults\IInterationResult.cs" />
+    <Compile Include="DependencyGraphInteration\InterationResults\ImageExistsInteractionResult.cs" />
+    <Compile Include="DependencyGraphInteration\InterationResults\SimpleInteractionResult.cs" />
+    <Compile Include="DependencyGraphInteration\InterationResults\StreamMetaDataResult.cs" />
+    <Compile Include="DependencyGraphInteration\InterationResults\StringInterationResult.cs" />
+    <Compile Include="HtmlTemplates\DebugHtmlTemplateBundleRenderer.cs" />
+    <Compile Include="HtmlTemplates\HtmlConstants.cs" />
     <Compile Include="HtmlTemplates\Manifests\HtmlTemplateBundleManifestWriter.cs" />
+    <Compile Include="HtmlTemplates\RegisterTemplatesWithHandlebars.cs" />
+    <Compile Include="HtmlTemplates\RegisterTemplateWithHandlebars.cs" />
+    <Compile Include="ICachePerRequestProvider.cs" />
     <Compile Include="IExternalBundle.cs" />
     <Compile Include="Manifests\AssetManifestBuilder.cs" />
     <Compile Include="Manifests\AssetReferenceManifest.cs" />
@@ -180,7 +203,9 @@
     <Compile Include="Manifests\CassetteManifest.cs" />
     <Compile Include="NullPlaceholderTracker.cs" />
     <Compile Include="PlaceholderTracker.cs" />
+    <Compile Include="RawFileReferenceFinder.cs" />
     <Compile Include="ReferenceBuilder.cs" />
+    <Compile Include="CombinedBundles\ScriptAndTemplateBundle.cs" />
     <Compile Include="Scripts\AssignScriptRenderer.cs" />
     <Compile Include="Scripts\DebugScriptBundleHtmlRenderer.cs" />
     <Compile Include="Scripts\Manifests\ExternalScriptBundleManifest.cs" />
@@ -291,6 +316,7 @@
     <None Include="Cassette.symbols.nutrans" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

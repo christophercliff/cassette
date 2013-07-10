@@ -1,6 +1,6 @@
 ﻿namespace Cassette.Configuration
 {
-    interface IBundleContainerFactory
+    public interface IBundleContainerFactory
     {
         IBundleContainer CreateBundleContainer();
     }

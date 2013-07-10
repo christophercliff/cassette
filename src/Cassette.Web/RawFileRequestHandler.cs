@@ -6,20 +6,25 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Routing;
 using System.Diagnostics;
+using Cassette.DependencyGraphInteration;
 
 namespace Cassette.Web
 {
     class RawFileRequestHandler : IHttpHandler
     {
-        readonly IEnumerable<Bundle> bundles;
+        readonly IEnumerable<Bundle> _bundles;
+        readonly IInteractWithDependencyGraph _interaction;
 
-        public RawFileRequestHandler(RequestContext requestContext, IEnumerable<Bundle> bundles)
+        public RawFileRequestHandler(RequestContext requestContext,
+                                     IEnumerable<Bundle> bundles,
+                                     IInteractWithDependencyGraph interaction)
         {
-            this.bundles = bundles;
+            _bundles = bundles;
             routeData = requestContext.RouteData;
             response = requestContext.HttpContext.Response;
             request = requestContext.HttpContext.Request;
             server = requestContext.HttpContext.Server;
+            _interaction = interaction;
         }
 
         readonly RouteData routeData;
@@ -72,13 +77,7 @@ namespace Cassette.Web
 
         bool AllowGet(string filename)
         {
-            var rawFileReferenceFinder = new RawFileReferenceFinder(filename);
-            foreach (var bundle in bundles)
-            {
-                bundle.Accept(rawFileReferenceFinder);
-                if (rawFileReferenceFinder.IsRawFileReferenceFound) return true;
-            }
-            return false;
+            return _interaction.ImageExists(filename).ImageExists;
         }
 
         void NotFound(string path)

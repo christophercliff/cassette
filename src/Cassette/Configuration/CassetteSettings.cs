@@ -26,7 +26,11 @@ namespace Cassette.Configuration
             { typeof(StylesheetBundle), new StylesheetPipeline() },
             { typeof(HtmlTemplateBundle), new HtmlTemplatePipeline() },
         };
- 
+
+        public static DiskBackedBundleCache bundles = new DiskBackedBundleCache(new FileHelper());
+
+        public static Dictionary<string, string> uncachedToCachedFiles = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        
         public CassetteSettings(string cacheVersion)
         {
             Version = cacheVersion;
@@ -70,6 +74,11 @@ namespace Cassette.Configuration
         /// </summary>
         public IUrlModifier UrlModifier { get; set; }
 
+        public bool UseOutOfProcessCassette { get; set; }
+        public string AppDomainAppPath { get; set; }
+        public string AppDomainAppVirtualPath { get; set; }
+        public string AssemblyPath { get; set; }
+        public string ConfigurationFileLocation { get; set; }
         /// <summary>
         /// The default <see cref="IFileSearch"/> object for each type of <see cref="Bundle"/>, used to find asset files to include.
         /// </summary>
@@ -148,7 +157,7 @@ namespace Cassette.Configuration
             get { return cassetteManifestCache.Value; }
         }
 
-        internal IBundleContainerFactory GetBundleContainerFactory(IEnumerable<ICassetteConfiguration> cassetteConfigurations)
+        public IBundleContainerFactory GetBundleContainerFactory(IEnumerable<ICassetteConfiguration> cassetteConfigurations)
         {
             var bundles = ExecuteCassetteConfiguration(cassetteConfigurations);
             if (IsDebuggingEnabled)

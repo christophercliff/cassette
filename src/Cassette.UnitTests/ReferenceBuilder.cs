@@ -333,7 +333,7 @@ namespace Cassette
             });
 
             bundleContainer.Setup(c => c.FindBundlesContainingPath(It.IsAny<string>()))
-                           .Returns<string>(s => findResultQueue.Dequeue());
+                           .Returns<string>(s => findResultQueue.Dequeue().ToArray());
 
             var queue = new Queue<IEnumerable<Bundle>>();
             queue.Enqueue(new[] { jquery });
@@ -362,7 +362,7 @@ namespace Cassette
             });
 
             bundleContainer.Setup(c => c.FindBundlesContainingPath(It.IsAny<string>()))
-                           .Returns<string>(s => findResultQueue.Dequeue());
+                           .Returns<string>(s => findResultQueue.Dequeue().ToArray());
 
             var queue = new Queue<IEnumerable<Bundle>>();
             queue.Enqueue(new[] { jquery });

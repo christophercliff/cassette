@@ -64,7 +64,7 @@ namespace Cassette
         {
             path = PathUtilities.AppRelative(path);
 
-            var bundles = bundleContainer.FindBundlesContainingPath(path).ToArray();
+            var bundles = bundleContainer.FindBundlesContainingPath(path);
             if (bundles.Length == 0 && path.IsUrl())
             {
                 var bundle = createExternalBundle();

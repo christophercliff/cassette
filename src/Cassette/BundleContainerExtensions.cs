@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Cassette
 {
-    static class BundleContainerExtensions
+    public static class BundleContainerExtensions
     {
         public static bool TryGetAssetByPath(this IEnumerable<Bundle> bundles, string path, out IAsset asset, out Bundle bundle)
         {

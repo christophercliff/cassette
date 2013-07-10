@@ -16,7 +16,7 @@ namespace Cassette
     public abstract class Bundle : IDisposable
     {
         readonly string path;
-        readonly List<IAsset> assets = new List<IAsset>();
+        protected readonly List<IAsset> assets = new List<IAsset>();
         readonly HashedSet<string> references = new HashedSet<string>();
         readonly HtmlAttributeDictionary htmlAttributes = new HtmlAttributeDictionary();
 
@@ -164,6 +164,7 @@ namespace Cassette
                 Assets,
                 asset => asset.References
                     .Where(reference => reference.Type == AssetReferenceType.SameBundle)
+                    .Where(reference => assetsByFilename.ContainsKey(reference.Path))
                     .Select(reference => assetsByFilename[reference.Path])
             );
             var cycles = graph.FindCycles().ToArray();

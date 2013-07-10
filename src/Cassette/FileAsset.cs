@@ -68,6 +68,11 @@ namespace Cassette
             }
         }
 
+        public void RemoveReference(AssetReference reference)
+        {
+            references.Remove(reference);
+        }
+
         void AddBundleReference(string appRelativeFilename, int lineNumber)
         {
             var type = parentBundle.ContainsPath(appRelativeFilename)

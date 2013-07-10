@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Web;
 using System.Web.Routing;
+using Cassette.DependencyGraphInteration;
 using Cassette.Utilities;
 using Moq;
 using Should;
@@ -20,6 +21,7 @@ namespace Cassette.Web
             response = new Mock<HttpResponseBase>();
             cache = new Mock<HttpCachePolicyBase>();
             requestHeaders = new NameValueCollection();
+            interation = new Mock<IInteractWithDependencyGraph>();
 
             routeData.Values.Add("path", "test/asset.js");
 
@@ -38,9 +40,11 @@ namespace Cassette.Web
             request.SetupGet(r => r.Headers).Returns(requestHeaders);
 
             bundles = new List<Bundle>();
-            handler = new AssetRequestHandler(requestContext, bundles);
+
+            handler = new AssetRequestHandler(requestContext, interation.Object);
         }
 
+        readonly Mock<IInteractWithDependencyGraph> interation;
         readonly AssetRequestHandler handler;
         readonly Mock<HttpRequestBase> request;
         readonly Mock<HttpResponseBase> response;

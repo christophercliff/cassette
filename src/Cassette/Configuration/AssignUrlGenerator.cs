@@ -1,8 +1,8 @@
 using Cassette.Configuration;
 
-namespace Cassette.Web
+namespace Cassette.Configuration
 {
-    class AssignUrlGenerator : ICassetteConfiguration
+    public class AssignUrlGenerator : ICassetteConfiguration
     {
         public void Configure(BundleCollection bundles, CassetteSettings settings)
         {

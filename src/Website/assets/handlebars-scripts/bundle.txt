@@ -1,0 +1,3 @@
+﻿handlebars.runtime.js
+jquery.js
+*

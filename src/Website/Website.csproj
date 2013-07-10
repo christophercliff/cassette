@@ -76,6 +76,10 @@
     <Compile Include="Views\Helpers.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="assets\handlebars-scripts\bundle.txt" />
+    <Content Include="assets\handlebars-scripts\handlebars.i18n.js" />
+    <Content Include="assets\handlebars-scripts\init.js" />
+    <Content Include="assets\handlebars-scripts\jquery.js" />
     <Content Include="assets\iestyles\iestyles.css" />
     <Content Include="assets\scripts\disqus\disqus.js" />
     <Content Include="assets\scripts\jquery\jquery.js" />
@@ -144,6 +148,18 @@
     <Content Include="Views\Home\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Cassette.Handlebars\Cassette.Handlebars.csproj">
+      <Project>{BF4F5C42-73C0-4BD4-B696-FB41EA7D658C}</Project>
+      <Name>Cassette.Handlebars</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Cassette.Hogan\Cassette.Hogan.csproj">
+      <Project>{4D64EC45-C42A-4601-9E80-2D166AC849F3}</Project>
+      <Name>Cassette.Hogan</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Cassette.Less\Cassette.Less.csproj">
+      <Project>{EC1BE4F4-A2A7-4154-9F4D-F75D1B1FD976}</Project>
+      <Name>Cassette.Less</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Cassette.Views\Cassette.Views.csproj">
       <Project>{3A021487-A395-4FE6-9B41-336D0F1E6AD0}</Project>
       <Name>Cassette.Views</Name>
@@ -266,6 +282,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Documentation\GettingStarted_Fx35.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="assets\handlebars-scripts\handlebars.runtime.js" />
+    <None Include="assets\handlebars-templates\test.mustache" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

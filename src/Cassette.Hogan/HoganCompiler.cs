@@ -5,17 +5,28 @@ namespace Cassette.HtmlTemplates
 {
     public class HoganCompiler : ICompiler
     {
+        private static object lockObject = new object();
+        private static readonly ScriptEngine _scriptEngine = new ScriptEngine();
+        static bool needToCreateHogan = true;
+
         public HoganCompiler()
         {
-            scriptEngine = new ScriptEngine();
-            scriptEngine.Execute(Properties.Resources.hogan);
+            if (needToCreateHogan)
+            {
+                lock(lockObject)
+                {
+                    if (needToCreateHogan)
+                    {
+                        needToCreateHogan = false;
+                        _scriptEngine.Execute(Properties.Resources.hogan);
+                    }
+                }
+            }
         }
-
-        readonly ScriptEngine scriptEngine;
 
         public string Compile(string source, IFile sourceFile)
         {
-            return scriptEngine.CallGlobalFunction<string>("compile", source);
+            return _scriptEngine.CallGlobalFunction<string>("compile", source);
         }
     }
 }

@@ -8,7 +8,7 @@ using Iesi.Collections.Generic;
 
 namespace Cassette
 {
-    class BundleContainer : IBundleContainer
+    public class BundleContainer : IBundleContainer
     {
         public BundleContainer(IEnumerable<Bundle> bundles)
         {
@@ -20,6 +20,7 @@ namespace Cassette
         }
 
         readonly Bundle[] bundles;
+        readonly Dictionary<string, Bundle[]>  bundlesByContainingPath = new Dictionary<string, Bundle[]>();
         readonly Dictionary<Bundle, HashedSet<Bundle>> bundleImmediateReferences;
 
         public IEnumerable<Bundle> Bundles
@@ -105,10 +106,16 @@ namespace Cassette
             }
         }
 
-        public IEnumerable<Bundle> FindBundlesContainingPath(string path)
+        public Bundle[] FindBundlesContainingPath(string path)
         {
             path = PathUtilities.AppRelative(path);
-            return bundles.Where(bundle => bundle.ContainsPath(path));
+            Bundle[] bundlesContainingPath;
+            if (!bundlesByContainingPath.TryGetValue(path, out bundlesContainingPath))
+            {
+                bundlesContainingPath = bundles.Where(bundle => bundle.ContainsPath(path)).ToArray();
+                bundlesByContainingPath[path] = bundlesContainingPath;
+            }
+            return bundlesContainingPath;
         }
 
         void ValidateBundleReferences()
@@ -132,7 +139,7 @@ namespace Cassette
         {
             var collector = new BundleReferenceCollector(AssetReferenceType.DifferentBundle);
             foreach (var bundle in Bundles)
-            {
+            { 
                 bundle.Accept(collector);
             }
             var notFound = from reference in collector.CollectedReferences

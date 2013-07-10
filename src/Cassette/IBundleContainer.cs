@@ -3,10 +3,10 @@ using System.Collections.Generic;
 
 namespace Cassette
 {
-    interface IBundleContainer : IDisposable
+    public interface IBundleContainer : IDisposable
     {
         IEnumerable<Bundle> Bundles { get; }
-        IEnumerable<Bundle> FindBundlesContainingPath(string path);
+        Bundle[] FindBundlesContainingPath(string path);
         IEnumerable<Bundle> IncludeReferencesAndSortBundles(IEnumerable<Bundle> bundles);
     }
 }
