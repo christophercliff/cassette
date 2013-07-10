@@ -20,33 +20,39 @@ namespace CassetteHostingEnvironment.Hosting
     public class CassetteHost : ICassetteHost
     {
         private static CassetteApplicationContainer<CassetteServiceApplication> _container;
+        private static string _settingsFile;
 
         public SimpleInteractionResult AppStart(HostedCassetteSettings settings)
         {
             return PerformInteraction(() =>
             {
-                var newAssemblyLocation = DiskBackedBundleCache.CacheDirectory + Guid.NewGuid().ToString();
-                File.Copy(settings.AssemblyPath, newAssemblyLocation);
+                var currentFile = File.ReadAllText(settings.ConfigurationFileLocation);
+                if (_container == null || _settingsFile != currentFile )
+                {
+                    _settingsFile = currentFile;
+                    var newAssemblyLocation = DiskBackedBundleCache.CacheDirectory + Guid.NewGuid().ToString() + ".dll";
+                    File.Copy(settings.AssemblyPath, newAssemblyLocation);
 
-                var assembly = Assembly.LoadFile(newAssemblyLocation);
+                    var assembly = Assembly.LoadFile(newAssemblyLocation);
 
-                var factory = new CassetteServiceContainerFactory(
-                    new AssemblyScanningCassetteConfigurationFactory(new[] { assembly }),
-                    new CassetteConfigurationSection
-                    {
-                        RewriteHtml = false,
-                        WatchFileSystem = settings.IsDebug
-                    },
-                    settings.AppDomainAppPath,
-                    settings.AppDomainAppVirtualPath,
-                    settings.IsDebug,
-                    new HostedDependencyGraphInteractionFactory(null)
-                    );
+                    var factory = new CassetteServiceContainerFactory(
+                        new AssemblyScanningCassetteConfigurationFactory(new[] { assembly }),
+                        new CassetteConfigurationSection
+                        {
+                            RewriteHtml = false,
+                            WatchFileSystem = settings.IsDebug
+                        },
+                        settings.AppDomainAppPath,
+                        settings.AppDomainAppVirtualPath,
+                        settings.IsDebug,
+                        new HostedDependencyGraphInteractionFactory(null)
+                        );
 
-                _container = factory.CreateContainer();
-                CassetteApplicationContainer.SetApplicationAccessor(() => _container.Application);
-                var lazyEvalulatedApp = _container.Application;
-                _container.Application.SetDependencyInteractionFactory(new HostedDependencyGraphInteractionFactory(lazyEvalulatedApp));
+                    _container = factory.CreateContainer();
+                    CassetteApplicationContainer.SetApplicationAccessor(() => _container.Application);
+                    var lazyEvalulatedApp = _container.Application;
+                    _container.Application.SetDependencyInteractionFactory(new HostedDependencyGraphInteractionFactory(lazyEvalulatedApp));
+                }
                 return new SimpleInteractionResult();
             });
         }
@@ -86,14 +92,17 @@ namespace CassetteHostingEnvironment.Hosting
 
         public Stream GetAsset(string path)
         {
-            IAsset asset;
-            Bundle bundle;
-            if (!_container.Application.Bundles.TryGetAssetByPath(path, out asset, out bundle))
+            return PerformInteraction(() =>
             {
-                throw new Exception("Path not found.");
-            }
+                IAsset asset;
+                Bundle bundle;
+                if (!_container.Application.Bundles.TryGetAssetByPath(path, out asset, out bundle))
+                {
+                    throw new Exception("Path not found.");
+                }
 
-            return asset.OpenStream();
+                return asset.OpenStream();
+            });
         }
 
 
@@ -121,14 +130,16 @@ namespace CassetteHostingEnvironment.Hosting
 
         public Stream GetBundle(BundleType type, string path)
         {
-            
-            var bundle = FindBundle(type, path);
-            if (bundle == null)
+            return PerformInteraction(() =>
             {
-                throw new Exception("Unknown path: " + path);
-            }
+                var bundle = FindBundle(type, path);
+                if (bundle == null)
+                {
+                    throw new Exception("Unknown path: " + path);
+                }
 
-            return bundle.OpenStream();   
+                return bundle.OpenStream();
+            });
         }
 
         private Bundle FindBundle(BundleType type, string path)
@@ -168,7 +179,6 @@ namespace CassetteHostingEnvironment.Hosting
         }
 
         private T PerformInteraction<T>(Func<T> action)
-            where T : IInterationResult, new()
         {
             try
             {
@@ -176,10 +186,20 @@ namespace CassetteHostingEnvironment.Hosting
             }
             catch (Exception exception)
             {
-                return new T
+                const string seperator = "<br/>*******<br/>";
+                var innerException = exception.InnerException ?? new Exception();
+                var message = exception.Message 
+                              + " ******* "
+                              + exception.StackTrace
+                              + " ******* Inner Exception ********"
+                              + innerException.Message
+                              + " ******* "
+                              + innerException.StackTrace;
+
+                throw new FaultException<GeneralFault>(new GeneralFault
                 {
-                    Exception = exception
-                };
+                    Message = message
+                }, new FaultReason(message));
             }
         }
 

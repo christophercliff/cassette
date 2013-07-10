@@ -67,5 +67,11 @@ namespace Cassette.Configuration
             set { this["AssemblyPath"] = value; }
         }
 
+        [ConfigurationProperty("ConfigurationFileLocation", DefaultValue = null)]
+        public string ConfigurationFileLocation
+        {
+            get { return (string)this["ConfigurationFileLocation"]; }
+            set { this["ConfigurationFileLocation"] = value; }
+        }        
     }
 }

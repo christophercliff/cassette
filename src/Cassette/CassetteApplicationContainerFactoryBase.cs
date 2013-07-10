@@ -75,6 +75,7 @@ namespace Cassette
                     settings.AppDomainAppPath = configurationSection.AppDomainAppPath;
                     settings.AppDomainAppVirtualPath = configurationSection.AppDomainAppVirtualPath;
                     settings.AssemblyPath = configurationSection.AssemblyPath;
+                    settings.ConfigurationFileLocation = configurationSection.ConfigurationFileLocation;
                 }
 
                 var dependencyInteractor = _dependencyGraphFactory.GetDependencyGraphInteration(settings);

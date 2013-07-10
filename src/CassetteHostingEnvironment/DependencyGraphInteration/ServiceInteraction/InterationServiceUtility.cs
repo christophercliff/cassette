@@ -21,11 +21,11 @@ namespace CassetteHostingEnvironment.DependencyGraphInteration.Service
                     return action(proxy);
                 }
             }
-            catch (Exception exception)
+            catch (FaultException<GeneralFault> e)
             {
                 return new T
                 {
-                    Exception = exception
+                    Exception = new Exception(e.Message)
                 };
             }
         }

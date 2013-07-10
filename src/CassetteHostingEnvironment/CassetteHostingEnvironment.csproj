@@ -26,7 +26,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -60,6 +60,7 @@
     <Compile Include="DependencyGraphInteration\Service\WcfServiceDependencyGraphInteraction.cs" />
     <Compile Include="Hosting\BundleType.cs" />
     <Compile Include="Hosting\CassetteHost.cs" />
+    <Compile Include="Hosting\GeneralFault.cs" />
     <Compile Include="Hosting\HostedDependencyGraphInteractionFactory.cs" />
     <Compile Include="Hosting\ICassetteHost.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
